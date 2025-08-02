@@ -248,8 +248,6 @@ async def run_analysis(request: AnalysisRequest):
             fund_mode=request.fund_mode,
             opex_mode=request.opex_mode,
             carbon_value=request.carbon_value,
-            plant_size=request.plant_size,
-            plant_effy=request.plant_effy
         )
         
         # Convert results to list of dicts for JSON response
