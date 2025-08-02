@@ -1,221 +1,207 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
-import originalmodela as model
+from typing import Optional, List
 import pandas as pd
 import numpy as np
+import uvicorn
 import logging
-from copy import deepcopy
-from pathlib import Path
-import json
-import traceback
-from contextlib import contextmanager
+from originalmodela import Analytics_Model2
 
-# Configure logging
+# Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('api.log')
+        logging.FileHandler('api_logs.log'),
+        logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="Project Economics Model API",
+    description="API for chemical plant economics analysis - Strict Payload Only",
+    version="2.0.0"
+)
 
-# Store pristine defaults at startup
-DEFAULT_PARAMS = None
-MULTIPLIER_DATA = None
-
-def load_data_files():
-    """Load required data files at startup (only multipliers now)"""
-    global DEFAULT_PARAMS, MULTIPLIER_DATA
+class AnalysisRequest(BaseModel):
+    # Required parameters with no defaults
+    location: str
+    plant_effy: Optional[str] = None
+    plant_size: Optional[str] = None
+    plant_mode: str
+    fund_mode: str
+    opex_mode: str
+    carbon_value: str
     
-    try:
-        # Load default parameters
-        DEFAULT_PARAMS = deepcopy(model.PARAMS)
-        logger.info("Loaded default parameters")
-        
-        # Load multiplier data
-        multiplier_path = Path("sectorwise_multipliers.csv")
-        if multiplier_path.exists():
-            MULTIPLIER_DATA = pd.read_csv(multiplier_path)
-            logger.info("Loaded multiplier data")
-        else:
-            raise FileNotFoundError("multiplier_data.csv not found")
-            
-    except Exception as e:
-        logger.critical(f"Failed to load data files: {str(e)}")
-        logger.error(traceback.format_exc())
-        raise
+    # Optional parameters
+    product: Optional[str] = None
+    
+    # Optional technical parameters
+    operating_prd: int
+    util_operating_first: float
+    util_operating_second: float
+    util_operating_third: float
+    infl: float
+    RR: float
+    IRR: float
+    construction_prd: int
+    capex_spread: List[float]
+    shrDebt_value: float
+    baseYear: int
+    ownerCost: float
+    corpTAX_value: float
+    Feed_Price: float
+    Fuel_Price: float
+    Elect_Price: float
+    CarbonTAX_value: float
+    credit_value: float
+    CAPEX: float
+    OPEX: float
+    PRIcoef: float
+    CONcoef: float
+    
+    # Technical parameters
+    EcNatGas: float
+    ngCcontnt: float
+    eEFF: float
+    hEFF: float
+    Cap: float
+    Yld: float
+    feedEcontnt: float
+    Heat_req: float
+    Elect_req: float
+    feedCcontnt: float
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize application data"""
+    """Load required data files"""
+    global project_datas, multipliers
     try:
-        load_data_files()
-        logger.info("Application startup completed")
-    except Exception as e:
-        logger.critical(f"Startup failed: {str(e)}")
-        raise RuntimeError("Application failed to initialize")
+        project_datas = pd.read_csv("./project_data.csv")
+        multipliers = pd.read_csv("./sectorwise_multipliers.csv")
+        logger.info("Data files loaded successfully")
+    except FileNotFoundError as e:
+        logger.error(f"Required data files not found: {str(e)}")
+        raise Exception(f"Required data files not found: {str(e)}")
 
-class ProjectData(BaseModel):
-    # Project-specific parameters (all optional with defaults from original model)
-    baseYear: Optional[int] = None
-    corpTAX: Optional[float] = None
-    Feed_Price: Optional[float] = None
-    Fuel_Price: Optional[float] = None
-    Elect_Price: Optional[float] = None
-    CO2price: Optional[float] = None
-    CAPEX: Optional[float] = None
-    OPEX: Optional[float] = None
-    Cap: Optional[float] = None
-    Yld: Optional[float] = None
-    feedEcontnt: Optional[float] = None
-    Heat_req: Optional[float] = None
-    Elect_req: Optional[float] = None
-    feedCcontnt: Optional[float] = None
-    Plant_Size: Optional[str] = None  # Added this field
-    Plant_Effy: Optional[str] = None  # Added this field
-
-class AnalysisRequest(BaseModel):
-    # Required parameters
-    location: str
-    product: str
-    plant_mode: str  # "Green" or "Brown"
-    fund_mode: str   # "Debt", "Equity", or "Mixed"
-    
-    # Project data - all fields optional
-    project_data: Optional[ProjectData] = None
-    
-    # Optional parameters with defaults
-    opex_mode: Optional[str] = "Inflated"
-    plant_size: Optional[str] = "Large"
-    plant_effy: Optional[str] = "High"
-    carbon_value: Optional[str] = "No"
-    operating_prd: Optional[int] = None
-    util_fac_year1: Optional[float] = None
-    util_fac_year2: Optional[float] = None
-    util_fac_remaining: Optional[float] = None
-    infl: Optional[float] = None
-    RR: Optional[float] = None
-    IRR: Optional[float] = None
-    construction_prd: Optional[int] = None
-    capex_spread: Optional[List[float]] = None  # [yr1, yr2, yr3]
-    shrDebt: Optional[float] = None
-    ownerCost: Optional[float] = None
-    credit: Optional[float] = None
-    PRIcoef: Optional[float] = None
-    CONcoef: Optional[float] = None
-    EcNatGas: Optional[float] = None
-    ngCcontnt: Optional[float] = None
-    eEFF: Optional[float] = None
-    elEFF: Optional[float] = None
-    hEFF: Optional[float] = None
-
-@app.post("/run_analysis")
+@app.post("/analyze", response_model=List[dict])
 async def run_analysis(request: AnalysisRequest):
+    """
+    Run economic analysis using ONLY the provided payload values.
+    All parameters are required except product, plant_size, and plant_effy - no defaults will be used.
+    """
+    # Convert request to dict and log everything
+    config = request.dict()
+    logger.info("\n=== PAYLOAD VALUES RECEIVED ===")
+    for key, value in config.items():
+        logger.info(f"{key}: {value}")
+    
+    # Validate parameters
+    validate_parameters(config)
+    
+    # Create data row from payload only
+    custom_data = create_custom_data_row(config)
+    
+    # Run analysis
     try:
-        # Validate we have the required data
-        if MULTIPLIER_DATA is None:
-            raise HTTPException(status_code=500, detail="Multiplier data not loaded")
-        
-        # Create a project data dictionary with defaults or provided values
-        project_data = {
-            'Country': request.location,
-            'Main_Prod': request.product,
-            'Base_Yr': request.project_data.baseYear if request.project_data and request.project_data.baseYear else None,
-            'corpTAX': request.project_data.corpTAX if request.project_data and request.project_data.corpTAX else None,
-            'Feed_Price': request.project_data.Feed_Price if request.project_data and request.project_data.Feed_Price else None,
-            'Fuel_Price': request.project_data.Fuel_Price if request.project_data and request.project_data.Fuel_Price else None,
-            'Elect_Price': request.project_data.Elect_Price if request.project_data and request.project_data.Elect_Price else None,
-            'CO2price': request.project_data.CO2price if request.project_data and request.project_data.CO2price else None,
-            'CAPEX': request.project_data.CAPEX if request.project_data and request.project_data.CAPEX else None,
-            'OPEX': request.project_data.OPEX if request.project_data and request.project_data.OPEX else None,
-            'Cap': request.project_data.Cap if request.project_data and request.project_data.Cap else None,
-            'Yld': request.project_data.Yld if request.project_data and request.project_data.Yld else None,
-            'feedEcontnt': request.project_data.feedEcontnt if request.project_data and request.project_data.feedEcontnt else None,
-            'Heat_req': request.project_data.Heat_req if request.project_data and request.project_data.Heat_req else None,
-            'Elect_req': request.project_data.Elect_req if request.project_data and request.project_data.Elect_req else None,
-            'feedCcontnt': request.project_data.feedCcontnt if request.project_data and request.project_data.feedCcontnt else None,
-            'Plant_Size': request.plant_size,  # Added this field from request
-            'Plant_Effy': request.plant_effy   # Added this field from request
-        }
-        
-        # Convert to DataFrame (single row)
-        project_df = pd.DataFrame([project_data])
-
-        # Fill any remaining NaN values with defaults
-        project_df.fillna({
-            'Plant_Size': 'Large',
-            'Plant_Effy': 'High'
-        }, inplace=True)
-
-        # Update model parameters from request (only if provided)
-        if request.operating_prd is not None:
-            model.PARAMS['operating_prd'] = request.operating_prd
-        if request.construction_prd is not None:
-            model.PARAMS['construction_prd'] = request.construction_prd
-        if request.util_fac_year1 is not None:
-            model.PARAMS['util_fac_year1'] = request.util_fac_year1
-        if request.util_fac_year2 is not None:
-            model.PARAMS['util_fac_year2'] = request.util_fac_year2
-        if request.util_fac_remaining is not None:
-            model.PARAMS['util_fac_remaining'] = request.util_fac_remaining
-        if request.infl is not None:
-            model.PARAMS['Infl'] = request.infl
-        if request.RR is not None:
-            model.PARAMS['RR'] = request.RR
-        if request.IRR is not None:
-            model.PARAMS['IRR'] = request.IRR
-        if request.capex_spread is not None:
-            model.PARAMS['capex_spread'] = request.capex_spread
-        if request.shrDebt is not None:
-            model.PARAMS['shrDebt'] = request.shrDebt
-        if request.ownerCost is not None:
-            model.PARAMS['OwnerCost'] = request.ownerCost
-        if request.credit is not None:
-            model.PARAMS['credit'] = request.credit
-        if request.PRIcoef is not None:
-            model.PARAMS['PRIcoef'] = request.PRIcoef
-        if request.CONcoef is not None:
-            model.PARAMS['CONcoef'] = request.CONcoef
-        if request.EcNatGas is not None:
-            model.PARAMS['EcNatGas'] = request.EcNatGas
-        if request.ngCcontnt is not None:
-            model.PARAMS['ngCcontnt'] = request.ngCcontnt
-        if request.eEFF is not None:
-            model.PARAMS['eEFF'] = request.eEFF
-        if request.elEFF is not None:
-            model.PARAMS['elEFF'] = request.elEFF
-        if request.hEFF is not None:
-            model.PARAMS['hEFF'] = request.hEFF
-
-        # Run the analysis
-        results = model.Analytics_Model2(
-            multiplier=MULTIPLIER_DATA,
-            project_data=project_df,
-            location=request.location,
-            product=request.product,
-            plant_mode=request.plant_mode,
-            fund_mode=request.fund_mode,
-            opex_mode=request.opex_mode,
-            carbon_value=request.carbon_value,
-            plant_size=request.plant_size,
-            plant_effy=request.plant_effy
+        logger.info("Starting analysis with payload values only...")
+        results = Analytics_Model2(
+            multiplier=multipliers,
+            project_data=custom_data,
+            location=config["location"],
+            product=config.get("product", ""),  # Use empty string if product not provided
+            plant_mode=config["plant_mode"],
+            fund_mode=config["fund_mode"],
+            opex_mode=config["opex_mode"],
+            plant_size=config.get("plant_size", ""),  # Use empty string if plant_size not provided
+            plant_effy=config.get("plant_effy", ""),  # Use empty string if plant_effy not provided
+            carbon_value=config["carbon_value"]
         )
         
-        # Convert results to list of dicts for JSON response
+        logger.info("Analysis completed successfully")
         return results.to_dict(orient='records')
-
-    except HTTPException:
-        raise
+    
     except Exception as e:
-        logger.error(f"Analysis failed: {str(e)}")
-        logger.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+        logger.error(f"Error running analysis: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error running analysis: {str(e)}")
+
+def validate_parameters(config: dict):
+    """Validate all payload parameters"""
+    if config["location"] not in project_datas['Country'].unique():
+        logger.error(f"Invalid location: {config['location']}")
+        raise HTTPException(status_code=400, detail="Invalid location")
+    
+    # Only validate product if it's provided
+    if "product" in config and config["product"] is not None:
+        if config["product"] not in project_datas['Main_Prod'].unique():
+            logger.error(f"Invalid product: {config['product']}")
+            raise HTTPException(status_code=400, detail="Invalid product")
+    
+    # Only validate plant_size if it's provided
+    if "plant_size" in config and config["plant_size"] is not None:
+        if config["plant_size"] not in ["Large", "Small"]:
+            raise HTTPException(status_code=400, detail="plant_size must be 'Large' or 'Small'")
+    
+    # Only validate plant_effy if it's provided
+    if "plant_effy" in config and config["plant_effy"] is not None:
+        if config["plant_effy"] not in ["High", "Low"]:
+            raise HTTPException(status_code=400, detail="plant_effy must be 'High' or 'Low'")
+    
+    if config["plant_mode"] not in ["Green", "Brown"]:
+        raise HTTPException(status_code=400, detail="plant_mode must be 'Green' or 'Brown'")
+    
+    if config["fund_mode"] not in ["Debt", "Equity", "Mixed"]:
+        raise HTTPException(status_code=400, detail="fund_mode must be 'Debt', 'Equity', or 'Mixed'")
+    
+    if config["opex_mode"] not in ["Inflated", "Uninflated"]:
+        raise HTTPException(status_code=400, detail="opex_mode must be 'Inflated' or 'Uninflated'")
+    
+    if config["carbon_value"] not in ["Yes", "No"]:
+        raise HTTPException(status_code=400, detail="carbon_value must be 'Yes' or 'No'")
+    
+    if sum(config["capex_spread"]) != 1.0:
+        raise HTTPException(status_code=400, detail="capex_spread values must sum to 1.0")
+    
+    if config["eEFF"] <= 0 or config["eEFF"] > 1:
+        raise HTTPException(status_code=400, detail="Electrical efficiency must be between 0 and 1")
+    
+    if config["hEFF"] <= 0 or config["hEFF"] > 1:
+        raise HTTPException(status_code=400, detail="Heat efficiency must be between 0 and 1")
+
+def create_custom_data_row(config: dict) -> pd.DataFrame:
+    """Create data row from payload values only"""
+    data = {
+        "Country": config["location"],
+        "Main_Prod": config.get("product", ""),  # Use empty string if product not provided
+        "Plant_Size": config.get("plant_size", ""),  # Use empty string if plant_size not provided
+        "Plant_Effy": config.get("plant_effy", ""),  # Use empty string if plant_effy not provided
+        "ProcTech": "Custom",
+        "Base_Yr": config["baseYear"],
+        "Cap": config["Cap"],
+        "Yld": config["Yld"],
+        "feedEcontnt": config["feedEcontnt"],
+        "feedCcontnt": config["feedCcontnt"],
+        "Heat_req": config["Heat_req"],
+        "Elect_req": config["Elect_req"],
+        "Feed_Price": config["Feed_Price"],
+        "Fuel_Price": config["Fuel_Price"],
+        "Elect_Price": config["Elect_Price"],
+        "CO2price": config["CarbonTAX_value"],
+        "corpTAX": config["corpTAX_value"],
+        "CAPEX": config["CAPEX"],
+        "OPEX": config["OPEX"],
+        "EcNatGas": config["EcNatGas"],
+        "ngCcontnt": config["ngCcontnt"],
+        "eEFF": config["eEFF"],
+        "hEFF": config["hEFF"]
+    }
+    
+    logger.info("\nCustom Data Row Created From Payload:")
+    for key, value in data.items():
+        logger.info(f"{key}: {value}")
+    
+    return pd.DataFrame([data])
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
