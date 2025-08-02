@@ -1,0 +1,1126 @@
+Country,Sector,Direct Impact,Indirect Impact,Total Impact,Multiplier Type,Unit of Measure
+USA,USA_A01_02,1.21798551,0.765886788,1.983872298,Output Multiplier,Dimensionless
+USA,USA_A03,1.004259149,0.635157285,1.639416434,Output Multiplier,Dimensionless
+USA,USA_B05_06,1.092302737,1.073949852,2.166252589,Output Multiplier,Dimensionless
+USA,USA_B07_08,1.054571343,1.113497352,2.168068694,Output Multiplier,Dimensionless
+USA,USA_B09,1.008892217,0.342418194,1.351310411,Output Multiplier,Dimensionless
+USA,USA_C10T12,1.170564119,0.254905085,1.425469203,Output Multiplier,Dimensionless
+USA,USA_C13T15,1.040777987,0.496474734,1.537252721,Output Multiplier,Dimensionless
+USA,USA_C16,1.192226469,1.12731538,2.319541848,Output Multiplier,Dimensionless
+USA,USA_C17_18,1.145129886,1.190099298,2.335229184,Output Multiplier,Dimensionless
+USA,USA_C19,1.014910474,0.781733602,1.796644076,Output Multiplier,Dimensionless
+USA,USA_C20,1.175885996,0.847599585,2.023485581,Output Multiplier,Dimensionless
+USA,USA_C21,1.096343803,0.145419417,1.24176322,Output Multiplier,Dimensionless
+USA,USA_C22,1.058129162,1.031526795,2.089655957,Output Multiplier,Dimensionless
+USA,USA_C23,1.086616427,1.137640688,2.224257115,Output Multiplier,Dimensionless
+USA,USA_C24,1.274462315,1.255345594,2.52980791,Output Multiplier,Dimensionless
+USA,USA_C25,1.09561466,1.079197749,2.174812409,Output Multiplier,Dimensionless
+USA,USA_C26,1.033684845,0.401580355,1.4352652,Output Multiplier,Dimensionless
+USA,USA_C27,1.038471336,0.650049892,1.688521228,Output Multiplier,Dimensionless
+USA,USA_C28,1.051154763,0.451228843,1.502383606,Output Multiplier,Dimensionless
+USA,USA_C29,1.198929363,0.220409156,1.419338519,Output Multiplier,Dimensionless
+USA,USA_C30,1.173866093,0.268515557,1.44238165,Output Multiplier,Dimensionless
+USA,USA_C31T33,1.015525679,0.485530774,1.501056452,Output Multiplier,Dimensionless
+USA,USA_D,1.038177516,0.999622629,2.037800145,Output Multiplier,Dimensionless
+USA,USA_E,1.059895003,0.941839099,2.001734102,Output Multiplier,Dimensionless
+USA,USA_F,1.004333721,0.240110361,1.244444082,Output Multiplier,Dimensionless
+USA,USA_G,1.065088392,0.590227894,1.655316286,Output Multiplier,Dimensionless
+USA,USA_H49,1.048694116,0.943910836,1.992604952,Output Multiplier,Dimensionless
+USA,USA_H50,1.001006072,0.587300671,1.588306743,Output Multiplier,Dimensionless
+USA,USA_H51,1.001884554,0.605195343,1.607079898,Output Multiplier,Dimensionless
+USA,USA_H52,1.086257391,1.529880307,2.616137698,Output Multiplier,Dimensionless
+USA,USA_H53,1.026898053,1.53827146,2.565169512,Output Multiplier,Dimensionless
+USA,USA_I,1.010674875,0.38110538,1.391780256,Output Multiplier,Dimensionless
+USA,USA_J58T60,1.133088504,0.544015685,1.677104189,Output Multiplier,Dimensionless
+USA,USA_J61,1.109438831,0.75355742,1.862996251,Output Multiplier,Dimensionless
+USA,USA_J62_63,1.056993766,0.84638587,1.903379636,Output Multiplier,Dimensionless
+USA,USA_K,1.359375203,0.715444556,2.074819759,Output Multiplier,Dimensionless
+USA,USA_L,1.051978046,0.480354335,1.532332381,Output Multiplier,Dimensionless
+USA,USA_M,1.127644091,1.144690756,2.272334847,Output Multiplier,Dimensionless
+USA,USA_N,1.106199824,1.375999355,2.482199179,Output Multiplier,Dimensionless
+USA,USA_O,1.01627082,0.145225248,1.161496068,Output Multiplier,Dimensionless
+USA,USA_P,1.011446691,0.050918356,1.062365047,Output Multiplier,Dimensionless
+USA,USA_Q,1.015559283,0.013747248,1.029306531,Output Multiplier,Dimensionless
+USA,USA_R,1.044032657,0.389493123,1.43352578,Output Multiplier,Dimensionless
+USA,USA_S,1.010227645,0.210212417,1.220440062,Output Multiplier,Dimensionless
+USA,USA_T,1,0,1,Output Multiplier,Dimensionless
+USA,USA_A01_02,82523.66484,283253.9044,365777.5693,Compensation (USD per million USD output),USD per million USD
+USA,USA_A03,7295731.576,31424.05533,7327155.631,Compensation (USD per million USD output),USD per million USD
+USA,USA_B05_06,119654.7019,152354.5817,272009.2836,Compensation (USD per million USD output),USD per million USD
+USA,USA_B07_08,326246.1256,49785.09976,376031.2254,Compensation (USD per million USD output),USD per million USD
+USA,USA_B09,597037.2737,25429.76597,622467.0396,Compensation (USD per million USD output),USD per million USD
+USA,USA_C10T12,165424.8145,2496181.133,2661605.947,Compensation (USD per million USD output),USD per million USD
+USA,USA_C13T15,220417.6739,36700.77633,257118.4503,Compensation (USD per million USD output),USD per million USD
+USA,USA_C16,279752.4433,111038.3525,390790.7958,Compensation (USD per million USD output),USD per million USD
+USA,USA_C17_18,149550.327,149574.9715,299125.2986,Compensation (USD per million USD output),USD per million USD
+USA,USA_C19,96550.62599,179433.8696,275984.4956,Compensation (USD per million USD output),USD per million USD
+USA,USA_C20,303124.6193,225411.1045,528535.7239,Compensation (USD per million USD output),USD per million USD
+USA,USA_C21,115345.4496,48412.0746,163757.5242,Compensation (USD per million USD output),USD per million USD
+USA,USA_C22,278766.1471,141336.1499,420102.297,Compensation (USD per million USD output),USD per million USD
+USA,USA_C23,246220.5032,117429.2907,363649.7939,Compensation (USD per million USD output),USD per million USD
+USA,USA_C24,201733.5504,193588.6648,395322.2152,Compensation (USD per million USD output),USD per million USD
+USA,USA_C25,365678.4809,216437.0619,582115.5427,Compensation (USD per million USD output),USD per million USD
+USA,USA_C26,473473.0541,72885.63367,546358.6878,Compensation (USD per million USD output),USD per million USD
+USA,USA_C27,395458.0189,69246.25129,464704.2702,Compensation (USD per million USD output),USD per million USD
+USA,USA_C28,363508.1231,181563.5765,545071.6995,Compensation (USD per million USD output),USD per million USD
+USA,USA_C29,184038.8775,405493.8438,589532.7214,Compensation (USD per million USD output),USD per million USD
+USA,USA_C30,573953.0215,163833.6375,737786.6589,Compensation (USD per million USD output),USD per million USD
+USA,USA_C31T33,272008.4866,114265.0292,386273.5158,Compensation (USD per million USD output),USD per million USD
+USA,USA_D,106263.3805,136172.7812,242436.1617,Compensation (USD per million USD output),USD per million USD
+USA,USA_E,399272.8345,66852.9657,466125.8002,Compensation (USD per million USD output),USD per million USD
+USA,USA_F,442960.4299,1014572.87,1457533.3,Compensation (USD per million USD output),USD per million USD
+USA,USA_G,415741.0555,1389343.55,1805084.605,Compensation (USD per million USD output),USD per million USD
+USA,USA_H49,351826.549,430761.9552,782588.5042,Compensation (USD per million USD output),USD per million USD
+USA,USA_H50,238304.5169,33979.31394,272283.8308,Compensation (USD per million USD output),USD per million USD
+USA,USA_H51,773903.9468,59699.52504,833603.4718,Compensation (USD per million USD output),USD per million USD
+USA,USA_H52,373452.8062,133534.1351,506986.9413,Compensation (USD per million USD output),USD per million USD
+USA,USA_H53,847221.3365,75976.57397,923197.9104,Compensation (USD per million USD output),USD per million USD
+USA,USA_I,637897.6024,1413444.107,2051341.709,Compensation (USD per million USD output),USD per million USD
+USA,USA_J58T60,146155.3616,233674.5261,379829.8877,Compensation (USD per million USD output),USD per million USD
+USA,USA_J61,197754.015,201580.955,399334.9701,Compensation (USD per million USD output),USD per million USD
+USA,USA_J62_63,203007.1689,253349.8472,456357.0161,Compensation (USD per million USD output),USD per million USD
+USA,USA_K,342973.3002,613917.7378,956891.038,Compensation (USD per million USD output),USD per million USD
+USA,USA_L,44514.01209,694475.8209,738989.833,Compensation (USD per million USD output),USD per million USD
+USA,USA_M,349959.7885,722685.3935,1072645.182,Compensation (USD per million USD output),USD per million USD
+USA,USA_N,434001.4011,406572.0397,840573.4408,Compensation (USD per million USD output),USD per million USD
+USA,USA_O,827653.8437,1110306.961,1937960.805,Compensation (USD per million USD output),USD per million USD
+USA,USA_P,170880.9742,336169.9075,507050.8817,Compensation (USD per million USD output),USD per million USD
+USA,USA_Q,660886.9184,652129.0632,1313015.982,Compensation (USD per million USD output),USD per million USD
+USA,USA_R,703156.8803,121260.804,824417.6843,Compensation (USD per million USD output),USD per million USD
+USA,USA_S,874133.1177,180316.0272,1054449.145,Compensation (USD per million USD output),USD per million USD
+USA,USA_T,18307552.64,0,18307552.64,Compensation (USD per million USD output),USD per million USD
+USA,USA_A01_02,3.948710636,7.076604315,11.02531495,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_A03,215.3594349,0.923238504,216.2826734,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_B05_06,4.122470349,3.53294283,7.65541318,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_B07_08,14.59975502,1.423732944,16.02348796,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_B09,16.63705271,0.481356329,17.11840904,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C10T12,1.084681755,69.23627471,70.32095646,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C13T15,17.46712687,1.271656082,18.73878295,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C16,8.811100577,2.761974142,11.57307472,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C17_18,4.205695521,3.403943925,7.609639446,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C19,4.498049196,4.580717235,9.078766431,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C20,11.57901124,5.503105906,17.08211714,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C21,3.632927547,1.052086608,4.685014155,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C22,4.600632863,3.166138778,7.766771641,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C23,6.546850572,3.195989686,9.742840258,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C24,5.022745503,5.094645827,10.11739133,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C25,2.978347119,4.175705581,7.1540527,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C26,2.397926848,0.965692616,3.363619464,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C27,8.793427441,1.378558368,10.17198581,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C28,3.119518421,3.279885692,6.399404113,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C29,1.963353612,7.326643743,9.289997356,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C30,4.037827988,1.822296614,5.860124602,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_C31T33,4.027428398,2.475023694,6.502452092,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_D,2.168640419,2.495133941,4.66377436,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_E,8.148425195,1.138625556,9.28705075,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_F,5.953681194,22.68470093,28.63838213,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_G,0.275059979,21.07019106,21.34525103,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_H49,1.750615998,4.48554975,6.236165748,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_H50,25.85208471,0.391917254,26.24400197,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_H51,9.785971028,0.924011937,10.70998296,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_H52,3.337976459,1.672132625,5.010109084,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_H53,5.960303189,1.067787212,7.0280904,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_I,1.181849952,38.08042954,39.26227949,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_J58T60,1.197641365,2.684696393,3.882337758,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_J61,1.620456382,2.485039728,4.10549611,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_J62_63,0.99864803,2.961867187,3.960515218,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_K,2.461106001,6.742375619,9.20348162,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_L,0.270490084,10.34471605,10.61520613,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_M,0.379497194,10.00955489,10.38905209,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_N,0.742132652,5.218410052,5.960542704,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_O,0.343574664,20.09761011,20.44118477,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_P,0.676236769,6.226979185,6.903215954,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_Q,0.400324263,9.802942408,10.20326667,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_R,4.445183333,2.167918012,6.613101345,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_S,2.124776659,3.430442649,5.555219308,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_T,44.50061411,0,44.50061411,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+USA,USA_A01_02,429486.3386,357745.3753,787231.7138,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_A03,872851.7896,4257.510795,877109.3004,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_B05_06,495788.4843,225146.9114,720935.3957,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_B07_08,540275.6142,74067.28307,614342.8972,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_B09,554611.1255,33972.38621,588583.5117,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C10T12,306448.5198,1077205.328,1383653.848,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C13T15,413399.7317,56580.46597,469980.1977,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C16,390097.3803,159879.2684,549976.6487,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C17_18,410510.7901,241731.7801,652242.5702,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C19,257169.2157,367913.1146,625082.3304,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C20,464857.9325,337319.3714,802177.3039,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C21,711730.1055,116731.2677,828461.3732,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C22,365312.7924,208698.5016,574011.2941,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C23,465692.5389,188499.2463,654191.7852,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C24,347062.171,308085.7332,655147.9043,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C25,438003.7688,322118.8715,760122.6403,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C26,763929.8568,108362.8089,872292.6657,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C27,541704.1487,100935.574,642639.7226,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C28,499058.6853,261179.4192,760238.1045,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C29,267240.3062,572226.138,839466.4442,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C30,600797.3095,196218.3448,797015.6544,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_C31T33,583426.1656,168691.3617,752117.5272,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_D,644639.2076,233763.7763,878402.9839,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_E,560795.8078,90657.31702,651453.1248,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_F,531153.7383,1519589.971,2050743.709,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_G,573095.9104,1747218.086,2320313.996,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_H49,513342.0572,474381.634,987723.6912,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_H50,286834.0503,37120.78605,323954.8363,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_H51,484757.8608,67815.04462,552572.9054,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_H52,522961.1056,190841.7808,713802.8864,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_H53,670683.1163,91294.69718,761977.8135,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_I,529825.8154,518160.6346,1047986.45,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_J58T60,614840.3334,360628.4014,975468.7348,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_J61,533248.7671,323383.677,856632.4442,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_J62_63,665023.4912,351615.4215,1016638.913,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_K,563669.1868,857441.5851,1421110.772,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_L,700517.7613,1013783.937,1714301.698,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_M,629413.5524,965677.5218,1595091.074,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_N,592389.1328,540118.9039,1132508.037,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_O,627085.262,1349244.335,1976329.597,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_P,763923.7827,425531.5087,1189455.291,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_Q,643169.6074,855196.9078,1498366.515,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_R,649732.8889,102366.0109,752098.8999,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_S,574763.3477,211835.8799,786599.2276,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_T,1000000,0,1000000,Value-Added Share (USD per million USD output),USD per million USD
+USA,USA_A01_02,4229.069091,5873.937618,10103.00671,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_A03,4544.084076,28.28118835,4572.365265,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_B05_06,6910.909293,4153.477337,11064.38663,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_B07_08,10377.50587,1430.63784,11808.14371,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_B09,10176.88514,664.9692529,10841.8544,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C10T12,5072.839634,15607.43026,20680.2699,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C13T15,10724.8159,1143.356951,11868.17285,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C16,12735.56477,3977.009262,16712.57404,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C17_18,11749.87215,5400.065019,17149.93717,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C19,5465.129773,6166.419912,11631.54969,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C20,12385.60516,6965.219151,19350.82431,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C21,5521.686579,1333.477013,6855.163593,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C22,14358.1151,4652.42683,19010.54193,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C23,16380.22013,4202.235847,20582.45598,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C24,11941.07516,7447.928895,19389.00405,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C25,12322.61337,7848.681693,20171.29506,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C26,3503.371125,1587.457908,5090.829034,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C27,14532.01819,2432.549314,16964.5675,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C28,13303.18631,6374.702706,19677.88901,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C29,22514.36488,16859.62666,39373.99154,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C30,6362.40556,3095.01311,9457.41867,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_C31T33,10561.93097,3908.089186,14470.02016,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_D,11349.79649,3699.829324,15049.62582,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_E,8297.541376,1538.615886,9836.157261,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_F,13059.75692,37074.08821,50133.84513,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_G,2500.872834,26804.49958,29305.37241,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_H49,11401.58693,7300.082545,18701.66948,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_H50,11535.2002,513.1852934,12048.38549,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_H51,20886.19796,875.8258883,21762.02385,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_H52,4257.255175,2892.980314,7150.235489,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_H53,9807.082867,1456.799088,11263.88196,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_I,4215.422409,6660.750082,10876.17249,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_J58T60,5578.733243,4777.557936,10356.29118,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_J61,9091.894623,4981.03757,14072.93219,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_J62_63,3944.360125,5066.073261,9010.433386,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_K,2262.525551,9951.456179,12213.98173,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_L,2319.290173,16135.76679,18455.05697,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_M,3468.262802,13633.76753,17102.03033,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_N,5732.900522,8183.698569,13916.59909,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_O,7912.593231,21782.90719,29695.50042,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_P,4376.536748,7290.700044,11667.23679,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_Q,3992.874228,12534.51157,16527.3858,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_R,3744.177921,1215.115206,4959.293127,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_S,2142.624783,3398.720601,5541.345384,Tax Revenue Share (USD per million USD output),USD per million USD
+USA,USA_T,0,0,0,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_A01_02,1.15233109,0.807228689,1.959559779,Output Multiplier,Dimensionless
+CAN,CAN_A03,1.002870748,0.844869735,1.847740483,Output Multiplier,Dimensionless
+CAN,CAN_B05_06,1.021038699,0.337329916,1.358368615,Output Multiplier,Dimensionless
+CAN,CAN_B07_08,1.016219752,1.024417386,2.040637138,Output Multiplier,Dimensionless
+CAN,CAN_B09,1.031505972,1.126407364,2.157913336,Output Multiplier,Dimensionless
+CAN,CAN_C10T12,1.160120739,0.319901042,1.480021781,Output Multiplier,Dimensionless
+CAN,CAN_C13T15,1.039132199,0.440556553,1.479688752,Output Multiplier,Dimensionless
+CAN,CAN_C16,1.155180467,0.912768483,2.06794895,Output Multiplier,Dimensionless
+CAN,CAN_C17_18,1.136315635,0.697242158,1.833557793,Output Multiplier,Dimensionless
+CAN,CAN_C19,1.045844432,0.896450431,1.942294863,Output Multiplier,Dimensionless
+CAN,CAN_C20,1.117919845,0.792711981,1.910631826,Output Multiplier,Dimensionless
+CAN,CAN_C21,1.04304846,0.388212681,1.43126114,Output Multiplier,Dimensionless
+CAN,CAN_C22,1.041507899,0.802863268,1.844371168,Output Multiplier,Dimensionless
+CAN,CAN_C23,1.11234433,0.994456738,2.106801068,Output Multiplier,Dimensionless
+CAN,CAN_C24,1.333965801,0.433106829,1.76707263,Output Multiplier,Dimensionless
+CAN,CAN_C25,1.071068434,0.94274349,2.013811924,Output Multiplier,Dimensionless
+CAN,CAN_C26,1.054782823,0.589198824,1.643981648,Output Multiplier,Dimensionless
+CAN,CAN_C27,1.033183228,0.729709113,1.762892341,Output Multiplier,Dimensionless
+CAN,CAN_C28,1.067011385,0.597692382,1.664703767,Output Multiplier,Dimensionless
+CAN,CAN_C29,1.130237222,0.13673165,1.266968872,Output Multiplier,Dimensionless
+CAN,CAN_C30,1.182047031,0.310870267,1.492917298,Output Multiplier,Dimensionless
+CAN,CAN_C31T33,1.034618876,0.603325466,1.637944341,Output Multiplier,Dimensionless
+CAN,CAN_D,1.003580611,0.71499408,1.718574691,Output Multiplier,Dimensionless
+CAN,CAN_E,1.065061092,1.019404487,2.084465579,Output Multiplier,Dimensionless
+CAN,CAN_F,1.007547985,0.238471159,1.246019144,Output Multiplier,Dimensionless
+CAN,CAN_G,1.031728066,0.608157493,1.63988556,Output Multiplier,Dimensionless
+CAN,CAN_H49,1.189777745,0.881285926,2.071063671,Output Multiplier,Dimensionless
+CAN,CAN_H50,1.00160475,0.166710648,1.168315398,Output Multiplier,Dimensionless
+CAN,CAN_H51,1.001725968,0.117753578,1.119479547,Output Multiplier,Dimensionless
+CAN,CAN_H52,1.024087546,1.239054729,2.263142275,Output Multiplier,Dimensionless
+CAN,CAN_H53,1.02230409,1.291029389,2.313333478,Output Multiplier,Dimensionless
+CAN,CAN_I,1.006553261,0.358131425,1.364684685,Output Multiplier,Dimensionless
+CAN,CAN_J58T60,1.09873882,0.628643599,1.727382419,Output Multiplier,Dimensionless
+CAN,CAN_J61,1.097970885,0.559826487,1.657797373,Output Multiplier,Dimensionless
+CAN,CAN_J62_63,1.126081903,0.790676236,1.916758138,Output Multiplier,Dimensionless
+CAN,CAN_K,1.318357231,0.750794959,2.06915219,Output Multiplier,Dimensionless
+CAN,CAN_L,1.021204474,0.227422095,1.248626568,Output Multiplier,Dimensionless
+CAN,CAN_M,1.091785271,1.137034531,2.228819802,Output Multiplier,Dimensionless
+CAN,CAN_N,1.06338576,1.162725362,2.226111122,Output Multiplier,Dimensionless
+CAN,CAN_O,1.022546588,0.099916384,1.122462971,Output Multiplier,Dimensionless
+CAN,CAN_P,1.003458704,0.079141046,1.08259975,Output Multiplier,Dimensionless
+CAN,CAN_Q,1.051092175,0.169420203,1.220512377,Output Multiplier,Dimensionless
+CAN,CAN_R,1.033943392,0.338626507,1.3725699,Output Multiplier,Dimensionless
+CAN,CAN_S,1.009243128,0.506706415,1.515949543,Output Multiplier,Dimensionless
+CAN,CAN_T,1,0,1,Output Multiplier,Dimensionless
+CAN,CAN_A01_02,128833.5438,2656797.634,2785631.178,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_A03,185260.4903,155878.1978,341138.6881,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_B05_06,450354.698,4418205.37,4868560.068,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_B07_08,752666.8036,1126428.027,1879094.831,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_B09,2519694.991,684984.4524,3204679.443,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C10T12,1707066.456,4572588.646,6279655.102,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C13T15,3485815.309,319298.2994,3805113.608,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C16,1264164.616,1305850.456,2570015.073,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C17_18,1540210.767,1407317.97,2947528.737,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C19,1023483.133,1165528.273,2189011.405,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C20,121077.2608,1241239.145,1362316.406,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C21,233928.2026,432209.591,666137.7936,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C22,322197.5475,952375.5661,1274573.114,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C23,2417046.382,1111974.095,3529020.477,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C24,1007472.514,2620435.722,3627908.237,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C25,5156528.24,1655921.739,6812449.979,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C26,23130205.59,1709470.98,24839676.57,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C27,7376207.581,813471.5277,8189679.109,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C28,5427534.747,1833571.29,7261106.037,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C29,3018768.88,2926930.877,5945699.757,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C30,8184246.891,2336156.6,10520403.49,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_C31T33,2625953.546,1556948.347,4182901.892,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_D,1142201.792,899292.7452,2041494.537,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_E,3331565.564,885652.0189,4217217.583,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_F,57793.62518,16588508.46,16646302.09,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_G,5864302.719,12292784.18,18157086.9,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_H49,2843022.836,3828089.097,6671111.934,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_H50,2512127.323,372610.2847,2884737.608,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_H51,14035246.51,497849.9119,14533096.42,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_H52,3785113.286,1835385.184,5620498.47,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_H53,11059380.06,768691.6083,11828071.67,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_I,10566639.45,2068933.315,12635572.77,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_J58T60,4124788.751,2495337.462,6620126.214,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_J61,2781713.577,3955339.685,6737053.262,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_J62_63,3515481.247,3200998.576,6716479.823,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_K,5074734.398,9325150.614,14399885.01,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_L,598871.8205,6317228.817,6916100.638,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_M,8678777.737,4964699.914,13643477.65,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_N,7838909.1,3970019.951,11808929.05,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_O,11665951.55,10369243.02,22035194.58,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_P,2324251.338,2941139.065,5265390.403,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_Q,9674772.544,6693325.303,16368097.85,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_R,9228992.001,1274372.833,10503364.83,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_S,12871494.68,1730740.931,14602235.61,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_T,186145423.3,0,186145423.3,Compensation (USD per million USD output),USD per million USD
+CAN,CAN_A01_02,27.99277786,56.4082379,84.40101576,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_A03,310.2025623,3.209948522,313.4125108,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_B05_06,15.5160964,57.73186951,73.24796591,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_B07_08,33.68239522,16.79248632,50.47488155,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_B09,70.21387145,7.608035672,77.82190712,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C10T12,11.19314442,244.0065095,255.1996539,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C13T15,276.2354631,13.00550258,289.2409657,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C16,39.81620838,24.18091369,63.99712207,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C17_18,43.31423176,25.32689026,68.64112201,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C19,47.68148766,17.41464411,65.09613177,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C20,20.31215723,20.50441208,40.81656931,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C21,110.4740441,9.970869984,120.4449141,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C22,56.71023903,18.71554921,75.42578824,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C23,64.26776522,19.07460089,83.34236611,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C24,25.08396858,46.3686555,71.45262409,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C25,41.99845446,20.77709904,62.7755535,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C26,117.1440286,12.34633324,129.4903618,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C27,164.0177795,10.61784758,174.6356271,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C28,46.57748631,18.53070481,65.10819111,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C29,32.2046671,39.18192534,71.38659244,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C30,57.57715339,20.46851031,78.0456637,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_C31T33,38.88055117,26.27848875,65.15903992,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_D,23.31024065,9.182516933,32.49275759,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_E,67.99113396,9.741491082,77.73262504,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_F,43.4989134,245.8649325,289.3638459,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_G,3.879903033,103.0824917,106.9623947,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_H49,14.14629247,39.13838023,53.2846727,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_H50,272.5241184,3.934500681,276.4586191,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_H51,177.4748873,5.418624952,182.8935123,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_H52,33.83190281,16.4490884,50.28099121,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_H53,77.80405826,6.762340992,84.56639925,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_I,19.57709558,52.78540565,72.36250123,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_J58T60,33.79977016,19.48175042,53.28152058,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_J61,22.7942048,26.88061127,49.67481607,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_J62_63,17.29361796,22.21346005,39.50707801,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_K,36.41525236,64.60275323,101.0180056,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_L,3.63905389,60.64725279,64.28630668,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_M,9.411286391,35.36943309,44.78071948,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_N,13.40435856,31.85246819,45.25682675,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_O,4.842755722,105.4434015,110.2861572,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_P,9.197888901,29.25005992,38.44794882,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_Q,5.860376529,68.81349213,74.67386866,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_R,58.34339757,11.26982152,69.61321909,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_S,31.28705561,18.5097952,49.79685081,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_T,452.4682141,0,452.4682141,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CAN,CAN_A01_02,429953.5164,506038.9201,935992.4365,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_A03,648881.7198,19552.60008,668434.3198,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_B05_06,471442.6246,663542.5696,1134985.194,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_B07_08,685675.8878,184112.6995,869788.5873,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_B09,692975.8043,79413.95819,772389.7625,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C10T12,306087.7274,1139884.872,1445972.6,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C13T15,494129.9964,44179.97503,538309.9714,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C16,353340.978,251889.4518,605230.4298,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C17_18,410242.0832,252627.9056,662869.9888,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C19,306382.1671,223243.0511,529625.2182,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C20,426006.8736,234570.9928,660577.8665,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C21,507274.7158,80683.73323,587958.449,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C22,435041.2567,178136.3123,613177.569,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C23,397785.3328,182909.2697,580694.6026,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C24,201409.2174,540755.5459,742164.7633,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C25,483742.3983,204546.0262,688288.4245,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C26,586153.5758,79858.18374,666011.7596,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C27,477193.3278,65224.89354,542418.2213,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C28,517522.4503,177116.907,694639.3573,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C29,346200.1713,292455.7486,638655.9199,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C30,499418.4708,179432.5236,678850.9943,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_C31T33,504086.3459,224013.263,728099.6089,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_D,791142.5748,114163.1771,905305.7519,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_E,590054.2569,103127.2093,693181.4662,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_F,520357.9265,2120617.091,2640975.018,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_G,638452.0118,1281841.432,1920293.444,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_H49,515949.2374,490724.2244,1006673.462,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_H50,416743.8818,41534.76699,458278.6488,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_H51,421857.8071,55581.26618,477439.0733,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_H52,540806.3496,196306.2248,737112.5744,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_H53,606078.053,80036.48537,686114.5384,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_I,506171.6794,337428.3959,843600.0753,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_J58T60,533951.8691,234437.1952,768389.0643,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_J61,633286.8332,285108.8717,918395.7048,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_J62_63,618807.1554,324188.6611,942995.8165,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_K,566315.4616,935643.7061,1501959.168,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_L,769136.2378,710482.8363,1479619.074,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_M,666252.2564,468153.6882,1134405.945,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_N,632774.1929,379302.1437,1012076.337,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_O,571424.3513,1186484.982,1757909.333,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_P,801788.2536,321309.5673,1123097.821,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_Q,721631.5288,673653.1247,1395284.654,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_R,518048.53,119985.2855,638033.8156,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_S,554829.0006,200060.5309,754889.5315,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_T,1000000,0,1000000,Value-Added Share (USD per million USD output),USD per million USD
+CAN,CAN_A01_02,10068.0691,9955.378229,20023.44733,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_A03,22427.64525,390.63393,22818.27918,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_B05_06,7332.907158,9733.138292,17066.04545,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_B07_08,8871.942902,2772.803169,11644.74607,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_B09,8573.113704,1234.767714,9807.881418,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C10T12,3718.362577,27146.54949,30864.91207,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C13T15,12955.44322,982.7534207,13938.19664,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C16,3412.249058,4265.417349,7677.666408,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C17_18,8264.355419,4401.459471,12665.81489,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C19,1902.491358,3408.784211,5311.275569,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C20,16119.72798,4872.605262,20992.33324,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C21,6562.158221,1471.410168,8033.568389,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C22,12867.55324,3983.426958,16850.98019,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C23,16060.51453,3943.331218,20003.84575,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C24,3519.280792,8589.227595,12108.50839,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C25,7274.132312,3644.538765,10918.67108,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C26,10589.82018,1438.95153,12028.77171,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C27,10661.15567,1214.704774,11875.86044,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C28,6450.981853,2884.565135,9335.546988,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C29,26269.34695,8289.690406,34559.03736,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C30,12707.27775,3983.826267,16691.10402,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_C31T33,11784.69506,3952.532933,15737.22799,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_D,5421.961976,1859.777645,7281.739622,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_E,12428.77929,1890.974593,14319.75388,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_F,9206.98001,39486.57124,48693.55125,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_G,7492.868738,20267.02331,27759.89205,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_H49,6955.732007,7091.003514,14046.73552,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_H50,10137.8972,468.3749237,10606.27213,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_H51,31785.75232,841.8512338,32627.60355,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_H52,1146.901505,3356.194409,4503.095914,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_H53,4146.956305,1201.111136,5348.067441,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_I,18819.46198,7107.741302,25927.20328,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_J58T60,15243.69634,5295.722983,20539.41933,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_J61,12121.95811,5303.686347,17425.64446,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_J62_63,7301.365504,5754.485895,13055.8514,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_K,8584.482478,15196.75307,23781.23554,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_L,6121.252548,12205.21247,18326.46502,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_M,6947.411614,8105.658906,15053.07052,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_N,10988.89315,6709.241346,17698.13449,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_O,5743.992562,19641.98369,25385.97625,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_P,3611.091182,5537.032344,9148.123526,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_Q,6927.551095,11810.85752,18738.40861,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_R,32415.59169,2888.081596,35303.67329,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_S,13206.26617,3498.995629,16705.2618,Tax Revenue Share (USD per million USD output),USD per million USD
+CAN,CAN_T,0,0,0,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_A01_02,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_A03,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_B05_06,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_B07_08,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_B09,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C10T12,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C13T15,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C16,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C17_18,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C19,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C20,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C21,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C22,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C23,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C24,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C25,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C26,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C27,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C28,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C29,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C30,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_C31T33,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_D,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_E,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_F,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_G,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_H49,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_H50,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_H51,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_H52,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_H53,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_I,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_J58T60,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_J61,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_J62_63,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_K,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_L,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_M,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_N,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_O,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_P,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_Q,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_R,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_S,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_T,1,0,1,Output Multiplier,Dimensionless
+CHN,CHN_A01_02,9523.968663,0,9523.968663,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_A03,77328.82406,0,77328.82406,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_B05_06,22698.49748,0,22698.49748,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_B07_08,35888.10287,0,35888.10287,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_B09,620527.9485,0,620527.9485,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C10T12,43123.96555,0,43123.96555,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C13T15,4069.371317,0,4069.371317,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C16,71610.10183,0,71610.10183,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C17_18,36642.08885,0,36642.08885,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C19,20526.15031,0,20526.15031,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C20,52619.58238,0,52619.58238,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C21,38815.69939,0,38815.69939,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C22,53787.47516,0,53787.47516,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C23,18681.55668,0,18681.55668,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C24,11983.62465,0,11983.62465,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C25,73236.93672,0,73236.93672,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C26,64882.67222,0,64882.67222,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C27,24490.53031,0,24490.53031,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C28,46864.03827,0,46864.03827,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C29,49402.85146,0,49402.85146,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C30,306458.0321,0,306458.0321,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_C31T33,91952.59892,0,91952.59892,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_D,23552.15981,0,23552.15981,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_E,103018.1371,0,103018.1371,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_F,102220.0099,0,102220.0099,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_G,360145.4043,0,360145.4043,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_H49,111946.3842,0,111946.3842,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_H50,24024.10229,0,24024.10229,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_H51,413981.6636,0,413981.6636,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_H52,280457.2345,0,280457.2345,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_H53,892672.554,0,892672.554,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_I,479824.6852,0,479824.6852,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_J58T60,655568.2691,0,655568.2691,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_J61,197275.4915,0,197275.4915,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_J62_63,280239.3757,0,280239.3757,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_K,416411.9423,0,416411.9423,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_L,77300.49869,0,77300.49869,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_M,431777.5488,0,431777.5488,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_N,577102.4906,0,577102.4906,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_O,1213862.635,0,1213862.635,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_P,182346.1631,0,182346.1631,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_Q,1423328.609,0,1423328.609,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_R,869862.6446,0,869862.6446,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_S,729857.8569,0,729857.8569,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_T,0,0,0,Compensation (USD per million USD output),USD per million USD
+CHN,CHN_A01_02,0.911433016,0,0.911433016,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_A03,4.565269892,0,4.565269892,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_B05_06,1.564065287,0,1.564065287,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_B07_08,3.212038205,0,3.212038205,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_B09,34.58328866,0,34.58328866,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C10T12,0.56552312,0,0.56552312,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C13T15,0.644959397,0,0.644959397,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C16,4.510872556,0,4.510872556,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C17_18,2.060917846,0,2.060917846,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C19,1.91252274,0,1.91252274,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C20,12.06004455,0,12.06004455,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C21,2.445083426,0,2.445083426,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C22,1.775369272,0,1.775369272,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C23,0.993462026,0,0.993462026,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C24,0.59673462,0,0.59673462,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C25,1.192987998,0,1.192987998,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C26,0.657202772,0,0.657202772,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C27,1.089145705,0,1.089145705,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C28,0.804346431,0,0.804346431,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C29,1.054073663,0,1.054073663,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C30,4.311937642,0,4.311937642,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_C31T33,2.72294819,0,2.72294819,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_D,0.961312646,0,0.961312646,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_E,4.204821922,0,4.204821922,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_F,6.869522758,0,6.869522758,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_G,0.476554269,0,0.476554269,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_H49,1.114044018,0,1.114044018,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_H50,5.212432694,0,5.212432694,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_H51,10.46954879,0,10.46954879,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_H52,5.013536549,0,5.013536549,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_H53,12.56011585,0,12.56011585,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_I,1.77796806,0,1.77796806,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_J58T60,10.74385049,0,10.74385049,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_J61,3.233070431,0,3.233070431,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_J62_63,2.757148943,0,2.757148943,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_K,5.976173243,0,5.976173243,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_L,0.939435354,0,0.939435354,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_M,0.936441119,0,0.936441119,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_N,1.973664604,0,1.973664604,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_O,1.007794383,0,1.007794383,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_P,1.443217197,0,1.443217197,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_Q,1.724328202,0,1.724328202,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_R,10.99811162,0,10.99811162,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_S,3.548166538,0,3.548166538,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_T,0,0,0,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+CHN,CHN_A01_02,454215.7321,0,454215.7321,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_A03,461155.7163,0,461155.7163,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_B05_06,368602.3278,0,368602.3278,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_B07_08,289967.0702,0,289967.0702,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_B09,269936.4013,0,269936.4013,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C10T12,259765.5239,0,259765.5239,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C13T15,231481.9258,0,231481.9258,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C16,227493.2269,0,227493.2269,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C17_18,262812.7778,0,262812.7778,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C19,282927.7128,0,282927.7128,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C20,230620.6943,0,230620.6943,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C21,278175.9189,0,278175.9189,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C22,226899.472,0,226899.472,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C23,303630.8057,0,303630.8057,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C24,231339.8101,0,231339.8101,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C25,233960.0974,0,233960.0974,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C26,241567.0369,0,241567.0369,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C27,207221.1885,0,207221.1885,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C28,259094.4636,0,259094.4636,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C29,216554.7961,0,216554.7961,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C30,219120.5976,0,219120.5976,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_C31T33,225579.9199,0,225579.9199,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_D,320356.6701,0,320356.6701,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_E,316546.1425,0,316546.1425,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_F,265841.7103,0,265841.7103,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_G,625892.0322,0,625892.0322,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_H49,421966.007,0,421966.007,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_H50,413601.3219,0,413601.3219,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_H51,332755.7632,0,332755.7632,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_H52,361486.5136,0,361486.5136,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_H53,423501.9864,0,423501.9864,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_I,402398.6212,0,402398.6212,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_J58T60,518083.5119,0,518083.5119,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_J61,669818.156,0,669818.156,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_J62_63,465966.4427,0,465966.4427,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_K,818304.4965,0,818304.4965,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_L,897027.4574,0,897027.4574,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_M,279111.426,0,279111.426,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_N,859266.2665,0,859266.2665,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_O,653938.2236,0,653938.2236,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_P,724934.348,0,724934.348,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_Q,526097.5349,0,526097.5349,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_R,852069.8996,0,852069.8996,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_S,843915.0895,0,843915.0895,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_T,0,0,0,Value-Added Share (USD per million USD output),USD per million USD
+CHN,CHN_A01_02,5583.539925,0,5583.539925,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_A03,10986.32199,0,10986.32199,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_B05_06,11278.31838,0,11278.31838,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_B07_08,32079.58917,0,32079.58917,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_B09,14272.52323,0,14272.52323,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C10T12,5112.781428,0,5112.781428,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C13T15,21553.57562,0,21553.57562,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C16,16040.66281,0,16040.66281,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C17_18,18393.48569,0,18393.48569,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C19,16626.32519,0,16626.32519,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C20,41370.53562,0,41370.53562,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C21,16367.87747,0,16367.87747,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C22,22854.86125,0,22854.86125,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C23,21285.51999,0,21285.51999,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C24,18147.29654,0,18147.29654,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C25,19124.6713,0,19124.6713,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C26,20233.43317,0,20233.43317,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C27,20033.85501,0,20033.85501,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C28,21591.87559,0,21591.87559,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C29,27101.49876,0,27101.49876,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C30,32175.67869,0,32175.67869,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_C31T33,25357.72732,0,25357.72732,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_D,30358.25334,0,30358.25334,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_E,31811.15977,0,31811.15977,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_F,17850.70219,0,17850.70219,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_G,12349.85622,0,12349.85622,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_H49,34076.93543,0,34076.93543,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_H50,50146.20874,0,50146.20874,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_H51,61909.58288,0,61909.58288,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_H52,39159.73127,0,39159.73127,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_H53,24887.86957,0,24887.86957,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_I,22432.26742,0,22432.26742,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_J58T60,25151.35399,0,25151.35399,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_J61,14424.66703,0,14424.66703,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_J62_63,15084.08615,0,15084.08615,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_K,6028.627454,0,6028.627454,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_L,3576.994055,0,3576.994055,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_M,23632.58995,0,23632.58995,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_N,8040.314863,0,8040.314863,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_O,17960.30681,0,17960.30681,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_P,17335.63632,0,17335.63632,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_Q,18539.97683,0,18539.97683,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_R,16641.2427,0,16641.2427,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_S,7302.126736,0,7302.126736,Tax Revenue Share (USD per million USD output),USD per million USD
+CHN,CHN_T,0,0,0,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_A01_02,1.107855358,0.597011563,1.704866921,Output Multiplier,Dimensionless
+SAU,SAU_A03,1.005158131,0.183535496,1.188693627,Output Multiplier,Dimensionless
+SAU,SAU_B05_06,1.002757066,0.4086858,1.411442866,Output Multiplier,Dimensionless
+SAU,SAU_B07_08,1.002849426,1.321245548,2.324094973,Output Multiplier,Dimensionless
+SAU,SAU_B09,1.018344488,1.289233176,2.307577664,Output Multiplier,Dimensionless
+SAU,SAU_C10T12,1.025272082,0.131220137,1.156492218,Output Multiplier,Dimensionless
+SAU,SAU_C13T15,1.026581805,0.055498944,1.08208075,Output Multiplier,Dimensionless
+SAU,SAU_C16,1.076835592,1.276873961,2.353709553,Output Multiplier,Dimensionless
+SAU,SAU_C17_18,1.011915051,0.541628278,1.553543329,Output Multiplier,Dimensionless
+SAU,SAU_C19,1.102392637,0.824434981,1.926827617,Output Multiplier,Dimensionless
+SAU,SAU_C20,1.0808067,0.365832836,1.446639537,Output Multiplier,Dimensionless
+SAU,SAU_C21,1.045039401,0.606265772,1.651305174,Output Multiplier,Dimensionless
+SAU,SAU_C22,1.05274828,0.776887858,1.829636138,Output Multiplier,Dimensionless
+SAU,SAU_C23,1.033246688,0.662076194,1.695322882,Output Multiplier,Dimensionless
+SAU,SAU_C24,1.021381358,0.874921518,1.896302876,Output Multiplier,Dimensionless
+SAU,SAU_C25,1.023514672,0.211314118,1.234828789,Output Multiplier,Dimensionless
+SAU,SAU_C26,1.008199731,0.178520251,1.186719982,Output Multiplier,Dimensionless
+SAU,SAU_C27,1.054730628,0.096452756,1.151183383,Output Multiplier,Dimensionless
+SAU,SAU_C28,1.012044309,0.28932703,1.30137134,Output Multiplier,Dimensionless
+SAU,SAU_C29,1.001914771,0.047419843,1.049334614,Output Multiplier,Dimensionless
+SAU,SAU_C30,1.003843352,0.216235133,1.220078485,Output Multiplier,Dimensionless
+SAU,SAU_C31T33,1.232780884,0.738804269,1.971585153,Output Multiplier,Dimensionless
+SAU,SAU_D,1.079266546,0.515269044,1.59453559,Output Multiplier,Dimensionless
+SAU,SAU_E,1.012847972,0.633753606,1.646601578,Output Multiplier,Dimensionless
+SAU,SAU_F,1.132783722,0.188329023,1.321112745,Output Multiplier,Dimensionless
+SAU,SAU_G,1.132783621,0.508082676,1.640866296,Output Multiplier,Dimensionless
+SAU,SAU_H49,1.002234725,0.461479786,1.463714511,Output Multiplier,Dimensionless
+SAU,SAU_H50,1.000048497,0.106609977,1.106658474,Output Multiplier,Dimensionless
+SAU,SAU_H51,1.01618807,0.519800702,1.535988772,Output Multiplier,Dimensionless
+SAU,SAU_H52,1.009077945,0.800996928,1.810074873,Output Multiplier,Dimensionless
+SAU,SAU_H53,1.006074096,0.496301984,1.502376079,Output Multiplier,Dimensionless
+SAU,SAU_I,1.001279711,0.195619056,1.196898767,Output Multiplier,Dimensionless
+SAU,SAU_J58T60,1.028013341,0.893488002,1.921501342,Output Multiplier,Dimensionless
+SAU,SAU_J61,1.113886826,0.210484458,1.324371284,Output Multiplier,Dimensionless
+SAU,SAU_J62_63,1.069916416,0.997734324,2.06765074,Output Multiplier,Dimensionless
+SAU,SAU_K,1.063805452,0.452789142,1.516594594,Output Multiplier,Dimensionless
+SAU,SAU_L,1.015257666,0.187188515,1.202446181,Output Multiplier,Dimensionless
+SAU,SAU_M,1.025174918,0.525166904,1.550341822,Output Multiplier,Dimensionless
+SAU,SAU_N,1.008616865,0.466467489,1.475084354,Output Multiplier,Dimensionless
+SAU,SAU_O,1.007163567,0.027191399,1.034354966,Output Multiplier,Dimensionless
+SAU,SAU_P,1.001958393,0.053975527,1.05593392,Output Multiplier,Dimensionless
+SAU,SAU_Q,1.004414143,0.102633253,1.107047396,Output Multiplier,Dimensionless
+SAU,SAU_R,1.010000131,0.14934947,1.1593496,Output Multiplier,Dimensionless
+SAU,SAU_S,1.000604964,0.021770963,1.022375927,Output Multiplier,Dimensionless
+SAU,SAU_T,1,0,1,Output Multiplier,Dimensionless
+SAU,SAU_A01_02,87102.16768,4153145.586,4240247.753,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_A03,987496.8243,1664153.662,2651650.486,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_B05_06,84592.94731,11547754.94,11632347.89,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_B07_08,3474958.197,489705.4361,3964663.633,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_B09,10029228.27,459712.8938,10488941.16,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C10T12,115469.9198,11451985,11567454.92,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C13T15,1486354.374,6212430.147,7698784.521,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C16,19858643.98,2284625.384,22143269.37,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C17_18,5176509.979,5915055.209,11091565.19,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C19,408799.5216,4698675.469,5107474.991,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C20,462705.5434,16708504.94,17171210.48,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C21,20309601.48,1406767.504,21716368.99,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C22,2180303.81,4562405.161,6742708.971,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C23,2874690.433,7553714.556,10428404.99,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C24,6057735.815,6166605.293,12224341.11,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C25,14174440.08,9415457.376,23589897.46,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C26,205506869.3,1934229.378,207441098.7,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C27,4251706.469,8088193.827,12339900.3,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C28,21423161.07,3922950.474,25346111.54,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C29,56059446.21,1541144.601,57600590.81,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C30,308740225.9,1980466.945,310720692.8,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_C31T33,8631513.029,6635487.176,15267000.21,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_D,2814393.613,5706289.725,8520683.338,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_E,11307257.41,2106414.121,13413671.53,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_F,110730.4219,68489810.15,68600540.57,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_G,16573654.85,107876531,124450185.8,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_H49,28297686.6,1539345.131,29837031.73,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_H50,62707482.99,41092.73763,62748575.73,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_H51,7810203.84,4725362.635,12535566.48,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_H52,13874352.04,4549246.848,18423598.89,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_H53,173515625,1672321.817,175187946.8,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_I,32704682.61,7293621.254,39998303.87,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_J58T60,17935656.44,5428767.641,23364424.08,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_J61,4213077.401,24036935.23,28250012.63,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_J62_63,24862954.22,1955755.65,26818709.87,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_K,196054.0789,8899038.588,9095092.667,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_L,37037.7922,2823079.385,2860117.178,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_M,113542195.1,7816598.342,121358793.4,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_N,33217628.88,5586790.761,38804419.64,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_O,22338694.8,48672849.27,71011544.06,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_P,624438.9181,15075664.65,15700103.57,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_Q,47473702.07,31293866.06,78767568.13,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_R,49922363.19,3682952.497,53605315.69,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_S,64143941.87,7347957.668,71491899.54,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_T,94958914.23,0,94958914.23,Compensation (USD per million USD output),USD per million USD
+SAU,SAU_A01_02,7.842797267,51.48435344,59.32715071,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_A03,433.9524388,18.78890059,452.7413394,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_B05_06,7.04060245,487.3173026,494.357905,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_B07_08,289.2179547,11.19338002,300.4113347,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_B09,834.7245409,17.92392848,852.6484694,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C10T12,38.14348052,244.4450239,282.5885044,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C13T15,117.7870175,98.5144104,216.3014279,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C16,625.4691018,59.85979216,685.328894,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C17_18,145.5752406,94.66150602,240.2367466,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C19,19.04493462,134.0730894,153.1180241,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C20,12.95276386,272.5710085,285.5237723,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C21,639.6724877,35.43467641,675.1071641,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C22,12.20688224,77.1586586,89.36554084,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C23,76.43623689,189.456498,265.8927349,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C24,150.8250128,126.998028,277.8230408,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C25,115.446779,126.5609194,242.0076984,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C26,1040.799334,13.53984892,1054.339183,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C27,94.5411916,118.1356541,212.6768456,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C28,183.8471862,48.60998503,232.4571713,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C29,598.0503558,17.97931279,616.0296686,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C30,2172.024327,17.27232034,2189.296647,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_C31T33,127.8004269,126.0766934,253.8771202,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_D,57.43660435,95.35405278,152.7906571,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_E,230.7603554,25.70681035,256.4671657,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_F,31.67979582,1263.366624,1295.04642,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_G,10.96535715,801.9498745,812.9152317,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_H49,140.8034243,23.38726197,164.1906863,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_H50,6802.721088,0.74255133,6803.46364,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_H51,98.75957968,67.29933261,166.0589123,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_H52,124.0110122,53.94133755,177.9523497,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_H53,1220.703125,13.28929791,1233.992423,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_I,60.59284035,160.3089016,220.901742,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_J58T60,146.9702091,78.97449747,225.9447066,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_J61,34.52323414,154.970011,189.4932452,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_J62_63,122.3077017,12.19112854,134.4988303,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_K,3.181414887,56.90414064,60.08555553,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_L,33.5426394,25.76569841,59.30833781,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_M,123.1254155,47.37122299,170.4966385,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_N,56.80139959,55.63555508,112.4369547,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_O,9.273212009,338.1148176,347.3880296,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_P,14.51863467,131.3332559,145.8518905,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_Q,28.75662121,394.3854519,423.1420732,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_R,315.5967935,26.3521487,341.9489422,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_S,155.9162418,61.98314453,217.8993863,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_T,230.8189456,0,230.8189456,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+SAU,SAU_A01_02,784635.7008,208645.6914,993281.3922,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_A03,573771.9146,50172.19052,623944.1051,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_B05_06,968783.3769,620523.7577,1589307.135,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_B07_08,905252.1981,19835.54829,925087.7463,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_B09,844323.8731,23377.41778,867701.2909,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C10T12,486035.6718,579179.0847,1065214.756,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C13T15,466295.2449,218879.2358,685174.4807,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C16,532024.018,66495.81225,598519.8303,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C17_18,477151.966,182010.0282,659161.9942,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C19,504589.8292,355115.6769,859705.5062,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C20,425037.1744,615703.0653,1040740.24,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C21,616260.4746,41106.61448,657367.0891,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C22,465424.0061,183498.5707,648922.5768,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C23,544118.9959,485111.3009,1029230.297,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C24,244713.5833,301280.2784,545993.8617,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C25,511660.1247,267162.8308,778822.9555,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C26,836074.1049,14943.25593,851017.3608,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C27,569837.5782,265517.5107,835355.089,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C28,676557.6453,104159.0786,780716.7238,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C29,501166.1982,41975.22746,543141.4257,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C30,267810.5995,19732.15452,287542.754,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_C31T33,604150.9579,267234.6573,871385.6152,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_D,592079.4923,228917.9026,820997.3948,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_E,611076.4971,75153.36395,686229.861,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_F,502250.7113,2699279.3,3201530.011,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_G,628707.5243,1657815.359,2286522.884,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_H49,745976.5421,58816.87806,804793.4202,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_H50,688435.3741,1715.006686,690150.3808,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_H51,520176.5821,151238.7654,671415.3475,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_H52,762655.3238,128074.8483,890730.1721,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_H53,667724.6094,19191.81716,686916.4265,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_I,571802.5158,350054.6541,921857.1699,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_J58T60,558766.0381,212793.8468,771559.8849,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_J61,646464.8208,702034.2735,1348499.094,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_J62_63,918041.6091,71492.92995,989534.539,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_K,847283.5678,279317.3077,1126600.876,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_L,898583.8298,94886.73459,993470.5644,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_M,783089.9554,115483.9186,898573.8741,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_N,845040.1018,124030.9735,969071.0753,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_O,805237.5101,1082455.837,1887693.347,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_P,907143.1683,394268.9224,1301412.091,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_Q,700025.3058,656031.7438,1356057.05,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_R,602789.8757,75164.84367,677954.7193,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_S,679919.5472,127757.3269,807676.8741,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_T,1000000,0,1000000,Value-Added Share (USD per million USD output),USD per million USD
+SAU,SAU_A01_02,520.5641997,461.0415088,981.6057085,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_A03,2082.971706,163.0649854,2246.036692,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_B05_06,168.2703986,1068.211433,1236.481831,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_B07_08,838.7320685,47.3045706,886.0366391,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_B09,834.7245409,41.61479713,876.339338,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C10T12,694.2113454,945.0446726,1639.256018,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C13T15,2756.21621,558.6730074,3314.889217,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C16,3314.98624,313.7775533,3628.763793,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C17_18,6128.717628,559.7604779,6688.478106,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C19,22.85392154,351.8049251,374.6588466,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C20,150.2520608,1263.377221,1413.629282,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C21,2494.722702,141.9611883,2636.68389,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C22,3320.271969,527.4882058,3847.760175,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C23,1681.597212,742.588333,2424.185545,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C24,4343.760369,632.1080804,4975.86845,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C25,5137.381667,871.4245675,6008.806235,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C26,1248.959201,35.01956426,1283.978765,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C27,3687.106472,1039.687989,4726.794462,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C28,2757.707793,376.1325526,3133.840346,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C29,4365.767598,158.0240577,4523.791655,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C30,6950.477845,93.03404473,7043.51189,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_C31T33,3041.650159,1244.681492,4286.331651,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_D,-298.6703426,344.6022583,45.93191567,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_E,1015.345564,158.989679,1174.335243,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_F,3220.478063,9867.413406,13087.89147,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_G,4053.892537,6156.101274,10209.99381,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_H49,-985.6239704,143.8899961,-841.7339743,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_H50,0,4.04265219,4.04265219,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_H51,-1886.307972,316.9454675,-1569.362504,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_H52,930.0825913,632.6113775,1562.693969,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_H53,1342.773438,66.98184125,1409.755279,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_I,3393.19906,844.0777886,4237.276848,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_J58T60,4541.379462,1327.737272,5869.116735,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_J61,2551.267003,1247.930691,3799.197694,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_J62_63,807.2308313,81.47902695,888.7098583,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_K,955.0019842,693.3119477,1648.313932,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_L,613.8303011,242.7842515,856.6145526,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_M,1883.818858,400.0884252,2283.907283,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_N,1198.509531,385.8686601,1584.378191,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_O,906.9201345,2743.193036,3650.113171,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_P,448.6258112,1987.718967,2436.344779,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_Q,1920.942297,2021.92425,3942.866547,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_R,2966.609859,194.3368675,3160.946727,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_S,3305.424326,452.7394586,3758.163785,Tax Revenue Share (USD per million USD output),USD per million USD
+SAU,SAU_T,0,0,0,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_A01_02,1.315118605,0.848409777,2.163528382,Output Multiplier,Dimensionless
+NGA,NGA_A03,1.027753859,0.069370414,1.097124273,Output Multiplier,Dimensionless
+NGA,NGA_B05_06,1.015333566,0.588726397,1.604059963,Output Multiplier,Dimensionless
+NGA,NGA_B07_08,1.016716442,1.529556983,2.546273425,Output Multiplier,Dimensionless
+NGA,NGA_B09,1.000112261,1.592429465,2.592541726,Output Multiplier,Dimensionless
+NGA,NGA_C10T12,1.088016101,0.393737401,1.481753502,Output Multiplier,Dimensionless
+NGA,NGA_C13T15,1.116794718,0.020972507,1.137767226,Output Multiplier,Dimensionless
+NGA,NGA_C16,1.084777183,0.555273444,1.640050628,Output Multiplier,Dimensionless
+NGA,NGA_C17_18,1.004445749,0.524222456,1.528668205,Output Multiplier,Dimensionless
+NGA,NGA_C19,1.009583824,0.466507283,1.476091108,Output Multiplier,Dimensionless
+NGA,NGA_C20,1.000619984,0.509414752,1.510034736,Output Multiplier,Dimensionless
+NGA,NGA_C21,1.000001027,0.010022057,1.010023085,Output Multiplier,Dimensionless
+NGA,NGA_C22,1.001025167,0.84097459,1.841999757,Output Multiplier,Dimensionless
+NGA,NGA_C23,1.10600811,0.802479999,1.908488109,Output Multiplier,Dimensionless
+NGA,NGA_C24,1.040782508,1.132144906,2.172927415,Output Multiplier,Dimensionless
+NGA,NGA_C25,1.003048406,0.447734567,1.450782973,Output Multiplier,Dimensionless
+NGA,NGA_C26,1.000003445,0.028569584,1.028573029,Output Multiplier,Dimensionless
+NGA,NGA_C27,1.000000264,0.017463934,1.017464198,Output Multiplier,Dimensionless
+NGA,NGA_C28,1.000070078,0.031500664,1.031570742,Output Multiplier,Dimensionless
+NGA,NGA_C29,1.000233315,0.972421716,1.972655031,Output Multiplier,Dimensionless
+NGA,NGA_C30,1.000034163,0.02246264,1.022496803,Output Multiplier,Dimensionless
+NGA,NGA_C31T33,1.010501834,0.249963795,1.260465629,Output Multiplier,Dimensionless
+NGA,NGA_D,1.029905399,0.385526998,1.415432397,Output Multiplier,Dimensionless
+NGA,NGA_E,1.000801563,0.170940842,1.171742404,Output Multiplier,Dimensionless
+NGA,NGA_F,1.000032841,0.001835979,1.00186882,Output Multiplier,Dimensionless
+NGA,NGA_G,1.237204614,0.605643459,1.842848073,Output Multiplier,Dimensionless
+NGA,NGA_H49,1.062718102,0.710162223,1.772880325,Output Multiplier,Dimensionless
+NGA,NGA_H50,1.000187138,0.432264818,1.432451956,Output Multiplier,Dimensionless
+NGA,NGA_H51,1.003502356,0.219515257,1.223017613,Output Multiplier,Dimensionless
+NGA,NGA_H52,1.002557995,0.841410277,1.843968272,Output Multiplier,Dimensionless
+NGA,NGA_H53,1.000407585,0.203659349,1.204066934,Output Multiplier,Dimensionless
+NGA,NGA_I,1.000431323,0.080786412,1.081217734,Output Multiplier,Dimensionless
+NGA,NGA_J58T60,1.509208674,1.317911328,2.827120002,Output Multiplier,Dimensionless
+NGA,NGA_J61,1.141525966,1.246999586,2.388525552,Output Multiplier,Dimensionless
+NGA,NGA_J62_63,1.001841331,0.060599586,1.062440917,Output Multiplier,Dimensionless
+NGA,NGA_K,1.515881192,0.290558321,1.806439513,Output Multiplier,Dimensionless
+NGA,NGA_L,1.051709028,0.165104389,1.216813416,Output Multiplier,Dimensionless
+NGA,NGA_M,1.278539499,1.113710448,2.392249947,Output Multiplier,Dimensionless
+NGA,NGA_N,1.00166538,0.243746028,1.245411408,Output Multiplier,Dimensionless
+NGA,NGA_O,1.000000028,4.55E-06,1.000004581,Output Multiplier,Dimensionless
+NGA,NGA_P,1.000002743,6.39E-05,1.000066667,Output Multiplier,Dimensionless
+NGA,NGA_Q,1.000001787,4.79E-05,1.000049721,Output Multiplier,Dimensionless
+NGA,NGA_R,1.001275806,0.071980292,1.073256098,Output Multiplier,Dimensionless
+NGA,NGA_S,1.073307988,0.425065873,1.49837386,Output Multiplier,Dimensionless
+NGA,NGA_T,1,0,1,Output Multiplier,Dimensionless
+NGA,NGA_A01_02,2898.008111,1127609.667,1130507.676,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_A03,86438.55889,13880.18211,100318.741,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_B05_06,6969.958937,8436307.289,8443277.248,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_B07_08,196137.9795,23890.90335,220028.8828,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_B09,6362765.957,5538.787823,6368304.745,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C10T12,30832.46233,754388.4729,785220.9353,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C13T15,10152.29652,627347.436,637499.7325,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C16,162578.7291,240054.3007,402633.0298,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C17_18,544798.5292,49424.36745,594222.8966,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C19,55222.53666,640369.6467,695592.1834,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C20,1056875.252,31816.99104,1088692.243,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C21,618546.6589,5411.881064,623958.5399,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C22,178840.6482,309510.4895,488351.1376,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C23,27539.67034,772862.0892,800401.7595,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C24,503182.1599,139952.0572,643134.2171,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C25,1395850.387,108981.838,1504832.225,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C26,56902305.48,1082.706237,56903388.18,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C27,21014953.27,2906.187509,21017859.46,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C28,6448644.162,13370.71851,6462014.88,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C29,2378507.993,25327.52048,2403835.513,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C30,49875087.72,3030.647806,49878118.37,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_C31T33,199212.4591,772700.3481,971912.8071,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_D,121796.6245,107672.292,229468.9164,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_E,485244.6029,34574.20538,519818.8083,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_F,161785.4852,860136.0533,1021921.539,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_G,105092.7854,8610068.096,8715160.881,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_H49,123220.7235,585515.5561,708736.2795,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_H50,1007431.694,21825.49141,1029257.185,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_H51,689717.4254,52464.97088,742182.3963,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_H52,2554921.215,31495.72326,2586416.938,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_H53,6788156.638,33942.79703,6822099.435,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_I,713221.9829,110076.388,823298.3709,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_J58T60,38832.81359,690698.7986,729531.6122,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_J61,28091.12651,1503968.054,1532059.181,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_J62_63,81119.41132,781160.9603,862280.3716,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_K,386031.8222,646669.9106,1032701.733,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_L,41132.2311,596407.357,637539.5881,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_M,270663.5633,808551.9579,1079215.521,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_N,32507115.06,68052.06156,32575167.13,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_O,1861931.998,375087.3567,2237019.355,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_P,163052.582,634655.0563,797707.6383,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_Q,3366461.388,318570.6737,3685032.062,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_R,1275574.55,93474.25111,1369048.802,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_S,160515.0215,910439.1511,1070954.173,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_T,7158517.487,0,7158517.487,Compensation (USD per million USD output),USD per million USD
+NGA,NGA_A01_02,13.86680472,1359.82283,1373.689635,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_A03,255.1541131,20.81634929,275.9704624,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_B05_06,24.01363975,19880.07302,19904.08666,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_B07_08,877.7319407,44.4754466,922.2073873,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_B09,17730.49645,5.652606448,17736.14906,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C10T12,20.2166824,1001.73155,1021.948232,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C13T15,80.45246466,1046.931885,1127.38435,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C16,512.0589892,326.7253182,838.7843074,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C17_18,1532.097441,125.3473458,1657.444787,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C19,257.2678158,1469.310733,1726.578549,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C20,4037.141704,76.2040687,4113.345772,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C21,1948.178453,7.675224216,1955.853677,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C22,295.1506744,697.1896331,992.3403075,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C23,73.22627652,1859.974536,1933.200812,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C24,1252.818842,237.9531717,1490.772014,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C25,1136.8804,181.4648078,1318.345208,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C26,28818.4438,1.530332104,28819.97414,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C27,46728.97196,4.711096667,46733.68306,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C28,5534.034311,18.6572932,5552.691604,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C29,2537.427049,82.68461443,2620.111663,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C30,35087.7193,5.99691467,35093.71621,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_C31T33,294.9591482,993.8621308,1288.821279,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_D,248.5645398,232.2811865,480.8457263,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_E,990.2951079,54.37048497,1044.665593,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_F,217.4503941,1429.28795,1646.738344,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_G,6.953082684,9188.917228,9195.870311,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_H49,61.31207848,719.9959424,781.3080209,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_H50,10928.96175,10.0042328,10938.96598,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_H51,872.1437293,76.95133269,949.095062,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_H52,2283.626399,29.99566811,2313.622067,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_H53,4775.549188,31.4260157,4806.975204,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_I,132.1405447,146.7293587,278.8699034,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_J58T60,31.82078534,828.7460828,860.5668682,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_J61,23.01872113,1632.609768,1655.628489,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_J62_63,39.9048668,880.6855523,920.5904191,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_K,277.0085116,552.6714317,829.6799433,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_L,24.99406391,638.8288181,663.822882,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_M,29.35081859,758.2026371,787.5534557,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_N,5558.643691,33.04649469,5591.690186,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_O,77.29229628,718.7264575,796.0187538,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_P,64.52570381,1493.685651,1558.211354,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_Q,203.9193295,318.9440237,522.8633532,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_R,806.3865817,84.81746925,891.204051,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_S,39.01677721,1109.829439,1148.846216,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_T,1740.038281,0,1740.038281,Employment Elasticity (Jobs per million USD output),Jobs per million USD
+NGA,NGA_A01_02,696345.4807,587629.227,1283974.708,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_A03,911027.7608,31019.15053,942046.9113,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_B05_06,876970.9195,1471038.129,2348009.049,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_B07_08,919160.8883,25062.01434,944222.9026,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_B09,826241.1348,2309.329443,828550.4642,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C10T12,501915.5307,419101.4421,921016.9728,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C13T15,606877.0767,349223.394,956100.4706,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C16,619386.5533,134869.2219,754255.7752,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C17_18,625555.3853,46214.64483,671770.0302,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C19,100900.4374,180611.8565,281512.2938,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C20,649495.3573,59648.1743,709143.5316,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C21,797584.2587,4520.466538,802104.7253,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C22,504058.3218,91913.96848,595972.2903,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C23,611563.8936,791609.2341,1403173.128,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C24,486344.2746,84355.59542,570699.87,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C25,648021.8281,62053.29858,710075.1267,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C26,570605.1873,844.455524,571449.6428,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C27,542056.0748,1874.214746,543930.2895,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C28,666851.1345,6362.517434,673213.6519,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C29,588683.0754,70459.13175,659142.2071,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C30,691228.0702,4411.980663,695640.0508,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_C31T33,699318.6444,292742.2836,992060.928,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_D,759762.3723,171940.0771,931702.4494,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_E,859081.0061,16260.1745,875341.1806,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_F,576245.7189,749539.9113,1325785.63,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_G,461012.3271,2247819.755,2708832.082,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_H49,492667.0754,288812.8159,781479.8913,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_H50,325683.0601,2274.212457,327957.2726,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_H51,510291.296,25896.97241,536188.2684,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_H52,629139.0728,12615.17492,641754.2478,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_H53,320439.3505,8858.605988,329297.9565,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_I,515057.4151,74892.64997,589950.065,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_J58T60,454209.8899,631119.5543,1085329.444,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_J61,436729.5922,886106.3157,1322835.908,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_J62_63,484325.3683,479612.9017,963938.27,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_K,453255.268,506648.5434,959903.8113,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_L,662757.5951,495977.9189,1158735.514,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_M,433781.6182,600669.809,1034451.427,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_N,474708.1712,8461.227707,483169.3989,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_O,659481.0595,387877.462,1047358.522,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_P,564341.8056,418904.3252,983246.1308,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_Q,538285.8541,113470.5981,651756.4522,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_R,654866.543,21409.70511,676276.2481,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_S,523008.1935,529357.3165,1052365.51,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_T,1000000,0,1000000,Value-Added Share (USD per million USD output),USD per million USD
+NGA,NGA_A01_02,63.17099927,1650.575593,1713.746593,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_A03,51.03082262,19.38827327,70.41909589,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_B05_06,1813.029801,6956.386289,8769.41609,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_B07_08,1316.597911,102.8367452,1419.434656,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_B09,1773.049645,7.177682521,1780.227328,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C10T12,970.4007553,1258.419252,2228.820007,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C13T15,2027.402109,2178.590884,4205.992993,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C16,3379.589329,823.316184,4202.905513,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C17_18,6741.228742,199.8279695,6941.056712,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C19,180.0874711,686.238693,866.3261641,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C20,2099.313686,119.9706521,2219.284338,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C21,1363.724917,11.99686877,1375.721786,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C22,295.1506744,374.2852656,669.4359401,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C23,2204.110923,2066.795462,4270.906385,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C24,7767.476823,594.0530834,8361.529906,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C25,6480.218281,463.9019641,6944.120245,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C26,2881.84438,3.034770294,2884.879151,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C27,4672.897196,13.34752359,4686.24472,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C28,6640.841173,29.461762,6670.302935,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C29,4059.883278,132.4979189,4192.381197,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C30,3508.77193,7.855536359,3516.627466,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_C31T33,4778.3382,2650.495901,7428.834101,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_D,1516.243693,390.195438,1906.439131,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_E,1584.472173,97.97908293,1682.451256,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_F,1150.312585,2547.209527,3697.522112,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_G,1549.84213,8613.993259,10163.83539,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_H49,680.5640711,884.881937,1565.446008,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_H50,9836.065574,11.92345224,9847.989026,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_H51,2093.14495,78.93811809,2172.083068,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_H52,2968.714318,52.12739057,3020.841709,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_H53,1910.219675,52.58258893,1962.802264,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_I,1797.111408,192.3126112,1989.424019,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_J58T60,575.9562146,1984.729177,2560.685392,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_J61,577.7699003,2840.489489,3418.259389,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_J62_63,582.6110552,1570.944681,2153.555737,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_K,72.68656825,803.0765813,875.7631496,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_L,149.9643835,1249.261031,1399.225414,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_M,140.8839293,1453.857145,1594.741074,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_N,5558.643691,49.06896844,5607.712659,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_O,3199.901066,1415.850987,4615.752052,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_P,3729.58568,1523.955405,5253.541085,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_Q,2569.383552,496.2042551,3065.587807,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_R,1532.134505,81.21927697,1613.353782,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_S,1396.800624,1713.865242,3110.665867,Tax Revenue Share (USD per million USD output),USD per million USD
+NGA,NGA_T,0,0,0,Tax Revenue Share (USD per million USD output),USD per million USD
