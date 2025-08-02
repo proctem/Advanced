@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import uvicorn
 import logging
-from originalmodel import Analytics_Model2
+from originalmodela import Analytics_Model2
 
 # Set up logging
 logging.basicConfig(
