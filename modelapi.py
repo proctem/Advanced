@@ -98,11 +98,13 @@ class AnalysisRequest(BaseModel):
     # Required parameters
     location: str
     product: str
-    plant_mode: str  # "Green", "Custom", or "Brown"
-    fund_mode: str   # "Debt", "Custom", "Equity", or "Mixed"
+    plant_mode: str  # "Green" or "Brown"
+    fund_mode: str   # "Debt", "Equity", or "Mixed"
     
     # Optional parameters with defaults
     opex_mode: Optional[str] = "Inflated"
+    plant_size: Optional[str] = "Large"
+    plant_effy: Optional[str] = "High"
     carbon_value: Optional[str] = "No"
     operating_prd: Optional[int] = None
     util_fac_year1: Optional[float] = None
@@ -246,6 +248,8 @@ async def run_analysis(request: AnalysisRequest):
             fund_mode=request.fund_mode,
             opex_mode=request.opex_mode,
             carbon_value=request.carbon_value,
+            plant_size=request.plant_size,
+            plant_effy=request.plant_effy
         )
         
         # Convert results to list of dicts for JSON response
