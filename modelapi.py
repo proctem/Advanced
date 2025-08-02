@@ -27,11 +27,10 @@ app = FastAPI()
 # Store pristine defaults at startup
 DEFAULT_PARAMS = None
 MULTIPLIER_DATA = None
-PROJECT_DATA = None
 
 def load_data_files():
     """Load all required data files at startup"""
-    global DEFAULT_PARAMS, MULTIPLIER_DATA, PROJECT_DATA
+    global DEFAULT_PARAMS, MULTIPLIER_DATA
     
     try:
         # Load default parameters
@@ -45,14 +44,6 @@ def load_data_files():
             logger.info("Loaded multiplier data")
         else:
             raise FileNotFoundError("multiplier_data.csv not found")
-        
-        # Load project data
-        project_path = Path("project_data.csv")
-        if project_path.exists():
-            PROJECT_DATA = pd.read_csv(project_path)
-            logger.info("Loaded project data")
-        else:
-            raise FileNotFoundError("project_data.csv not found")
             
     except Exception as e:
         logger.critical(f"Failed to load data files: {str(e)}")
@@ -79,13 +70,11 @@ def request_context():
         
         # Create fresh copies of data
         multiplier_data = MULTIPLIER_DATA.copy()
-        project_data = PROJECT_DATA.copy()
-        logger.debug("Created fresh data copies")
+        logger.debug("Created fresh multiplier data copy")
         
         yield {
             "PARAMS": model.PARAMS,
-            "multiplier_data": multiplier_data,
-            "project_data": project_data
+            "multiplier_data": multiplier_data
         }
         
     except Exception as e:
@@ -97,11 +86,26 @@ def request_context():
 class AnalysisRequest(BaseModel):
     # Required parameters
     location: str
-    product: str
     plant_mode: str  # "Green" or "Brown"
     fund_mode: str   # "Debt", "Equity", or "Mixed"
     
-    # Optional parameters with defaults
+    # Optional parameters with defaults (originally from project data)
+    baseYear: Optional[int] = None
+    corpTAX: Optional[float] = None
+    Feed_Price: Optional[float] = None
+    Fuel_Price: Optional[float] = None
+    Elect_Price: Optional[float] = None
+    CO2price: Optional[float] = None
+    CAPEX: Optional[float] = None
+    OPEX: Optional[float] = None
+    Cap: Optional[float] = None
+    Yld: Optional[float] = None
+    feedEcontnt: Optional[float] = None
+    Heat_req: Optional[float] = None
+    Elect_req: Optional[float] = None
+    feedCcontnt: Optional[float] = None
+    
+    # Other optional parameters
     opex_mode: Optional[str] = "Inflated"
     plant_size: Optional[str] = "Large"
     plant_effy: Optional[str] = "High"
@@ -116,16 +120,8 @@ class AnalysisRequest(BaseModel):
     construction_prd: Optional[int] = None
     capex_spread: Optional[List[float]] = None  # [yr1, yr2, yr3]
     shrDebt: Optional[float] = None
-    baseYear: Optional[int] = None
     ownerCost: Optional[float] = None
-    corpTAX: Optional[float] = None
-    CO2price: Optional[float] = None
-    Feed_Price: Optional[float] = None
-    Fuel_Price: Optional[float] = None
-    Elect_Price: Optional[float] = None
     credit: Optional[float] = None
-    CAPEX: Optional[float] = None
-    OPEX: Optional[float] = None
     PRIcoef: Optional[float] = None
     CONcoef: Optional[float] = None
     EcNatGas: Optional[float] = None
@@ -133,27 +129,13 @@ class AnalysisRequest(BaseModel):
     eEFF: Optional[float] = None
     elEFF: Optional[float] = None
     hEFF: Optional[float] = None
-    Cap: Optional[float] = None
-    Yld: Optional[float] = None
-    feedEcontnt: Optional[float] = None
-    Heat_req: Optional[float] = None
-    Elect_req: Optional[float] = None
-    feedCcontnt: Optional[float] = None
-
-@app.on_event("startup")
-async def startup_event():
-    """Load data files when starting the application"""
-    load_data_files()
-# Add this to your API code (after loading DEFAULT_PARAMS)
-DEFAULT_PARAMS = deepcopy(model.PARAMS)  # Store pristine defaults at startup
 
 @app.post("/run_analysis")
 async def run_analysis(request: AnalysisRequest):
-    print(f"Current PARAMS at start: {model.PARAMS['construction_prd']}")  # Debug log
     try:
         # Validate we have the required data
-        if MULTIPLIER_DATA is None or PROJECT_DATA is None:
-            raise HTTPException(status_code=500, detail="Data files not loaded")
+        if MULTIPLIER_DATA is None:
+            raise HTTPException(status_code=500, detail="Multiplier data not loaded")
         
         # Update model parameters from request (only if provided)
         if request.operating_prd is not None:
@@ -191,57 +173,44 @@ async def run_analysis(request: AnalysisRequest):
         if request.eEFF is not None:
             model.PARAMS['eEFF'] = request.eEFF
         if request.elEFF is not None:
-            model.PARAMS['elEFF'] = request.elEFF  # Assuming same as eEFF
+            model.PARAMS['elEFF'] = request.elEFF
         if request.hEFF is not None:
             model.PARAMS['hEFF'] = request.hEFF
-
-        # Filter project data for this request
-        project_data = PROJECT_DATA[
-            (PROJECT_DATA['Country'] == request.location) & 
-            (PROJECT_DATA['Main_Prod'] == request.product)
-        ]
-        
-        if len(project_data) == 0:
-            raise HTTPException(
-                status_code=404,
-                detail=f"No project data found for location '{request.location}' and product '{request.product}'"
-            )
-
-        # Update project data with any provided overrides
-        for idx in project_data.index:
-            if request.baseYear is not None:
-                project_data.at[idx, 'Base_Yr'] = request.baseYear
-            if request.corpTAX is not None:
-                project_data.at[idx, 'corpTAX'] = request.corpTAX
-            if request.Feed_Price is not None:
-                project_data.at[idx, 'Feed_Price'] = request.Feed_Price
-            if request.Fuel_Price is not None:
-                project_data.at[idx, 'Fuel_Price'] = request.Fuel_Price
-            if request.Elect_Price is not None:
-                project_data.at[idx, 'Elect_Price'] = request.Elect_Price
-            if request.CO2price is not None:
-                project_data.at[idx, 'CO2price'] = request.CO2price
-            if request.CAPEX is not None:
-                project_data.at[idx, 'CAPEX'] = request.CAPEX
-            if request.OPEX is not None:
-                project_data.at[idx, 'OPEX'] = request.OPEX
-            if request.Cap is not None:
-                project_data.at[idx, 'Cap'] = request.Cap
-            if request.Yld is not None:
-                project_data.at[idx, 'Yld'] = request.Yld
-            if request.feedEcontnt is not None:
-                project_data.at[idx, 'feedEcontnt'] = request.feedEcontnt
-            if request.Heat_req is not None:
-                project_data.at[idx, 'Heat_req'] = request.Heat_req
-            if request.Elect_req is not None:
-                project_data.at[idx, 'Elect_req'] = request.Elect_req
-            if request.feedCcontnt is not None:
-                project_data.at[idx, 'feedCcontnt'] = request.feedCcontnt
+            
+        # Update parameters that were previously from project data
+        if request.baseYear is not None:
+            model.PARAMS['baseYear'] = request.baseYear
+        if request.corpTAX is not None:
+            model.PARAMS['corpTAX'] = request.corpTAX
+        if request.Feed_Price is not None:
+            model.PARAMS['Feed_Price'] = request.Feed_Price
+        if request.Fuel_Price is not None:
+            model.PARAMS['Fuel_Price'] = request.Fuel_Price
+        if request.Elect_Price is not None:
+            model.PARAMS['Elect_Price'] = request.Elect_Price
+        if request.CO2price is not None:
+            model.PARAMS['CO2price'] = request.CO2price
+        if request.CAPEX is not None:
+            model.PARAMS['CAPEX'] = request.CAPEX
+        if request.OPEX is not None:
+            model.PARAMS['OPEX'] = request.OPEX
+        if request.Cap is not None:
+            model.PARAMS['Cap'] = request.Cap
+        if request.Yld is not None:
+            model.PARAMS['Yld'] = request.Yld
+        if request.feedEcontnt is not None:
+            model.PARAMS['feedEcontnt'] = request.feedEcontnt
+        if request.Heat_req is not None:
+            model.PARAMS['Heat_req'] = request.Heat_req
+        if request.Elect_req is not None:
+            model.PARAMS['Elect_req'] = request.Elect_req
+        if request.feedCcontnt is not None:
+            model.PARAMS['feedCcontnt'] = request.feedCcontnt
 
         # Run the analysis
         results = model.Analytics_Model2(
             multiplier=MULTIPLIER_DATA,
-            project_data=project_data,
+            project_data=None,  # No longer using project data CSV
             location=request.location,
             product=request.product,
             plant_mode=request.plant_mode,
@@ -258,6 +227,8 @@ async def run_analysis(request: AnalysisRequest):
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Analysis failed: {str(e)}")
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 if __name__ == "__main__":
