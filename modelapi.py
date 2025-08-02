@@ -98,8 +98,8 @@ class AnalysisRequest(BaseModel):
     # Required parameters
     location: str
     product: str
-    plant_mode: str  # "Green" or "Brown"
-    fund_mode: str   # "Debt", "Equity", or "Mixed"
+    plant_mode: str  # "Green", "Custom", or "Brown"
+    fund_mode: str   # "Debt", "Custom", "Equity", or "Mixed"
     
     # Optional parameters with defaults
     opex_mode: Optional[str] = "Inflated"
