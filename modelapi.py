@@ -60,29 +60,6 @@ async def startup_event():
         logger.critical(f"Startup failed: {str(e)}")
         raise RuntimeError("Application failed to initialize")
 
-@contextmanager
-def request_context():
-    """Context manager to handle request-specific state"""
-    try:
-        # Reset to defaults at start of each request
-        model.PARAMS = deepcopy(DEFAULT_PARAMS)
-        logger.debug("Reset PARAMS to defaults")
-        
-        # Create fresh copy of multiplier data
-        multiplier_data = MULTIPLIER_DATA.copy()
-        logger.debug("Created fresh multiplier data copy")
-        
-        yield {
-            "PARAMS": model.PARAMS,
-            "multiplier_data": multiplier_data
-        }
-        
-    except Exception as e:
-        logger.error(f"Request context setup failed: {str(e)}")
-        logger.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-
 class ProjectData(BaseModel):
     # Project-specific parameters (all optional with defaults from original model)
     baseYear: Optional[int] = None
@@ -99,6 +76,8 @@ class ProjectData(BaseModel):
     Heat_req: Optional[float] = None
     Elect_req: Optional[float] = None
     feedCcontnt: Optional[float] = None
+    Plant_Size: Optional[str] = None  # Added this field
+    Plant_Effy: Optional[str] = None  # Added this field
 
 class AnalysisRequest(BaseModel):
     # Required parameters
@@ -159,11 +138,19 @@ async def run_analysis(request: AnalysisRequest):
             'feedEcontnt': request.project_data.feedEcontnt if request.project_data and request.project_data.feedEcontnt else None,
             'Heat_req': request.project_data.Heat_req if request.project_data and request.project_data.Heat_req else None,
             'Elect_req': request.project_data.Elect_req if request.project_data and request.project_data.Elect_req else None,
-            'feedCcontnt': request.project_data.feedCcontnt if request.project_data and request.project_data.feedCcontnt else None
+            'feedCcontnt': request.project_data.feedCcontnt if request.project_data and request.project_data.feedCcontnt else None,
+            'Plant_Size': request.plant_size,  # Added this field from request
+            'Plant_Effy': request.plant_effy   # Added this field from request
         }
         
         # Convert to DataFrame (single row)
         project_df = pd.DataFrame([project_data])
+
+        # Fill any remaining NaN values with defaults
+        project_df.fillna({
+            'Plant_Size': 'Large',
+            'Plant_Effy': 'High'
+        }, inplace=True)
 
         # Update model parameters from request (only if provided)
         if request.operating_prd is not None:
