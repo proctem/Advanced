@@ -103,8 +103,8 @@ class AnalysisRequest(BaseModel):
     
     # Optional parameters with defaults
     opex_mode: Optional[str] = "Inflated"
-    plant_size: Optional[str] = "Large"
-    plant_effy: Optional[str] = "High"
+    plant_size: Optional[str] = None
+    plant_effy: Optional[str] = None
     carbon_value: Optional[str] = "No"
     operating_prd: Optional[int] = None
     util_fac_year1: Optional[float] = None
