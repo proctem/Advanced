@@ -50,7 +50,7 @@ def load_data_files():
         project_path = Path("project_data.csv")
         if project_path.exists():
             PROJECT_DATA = pd.read_csv(project_path)
-            logger.info("Loaded project data")
+            logger.info(f"Loaded project data with columns: {PROJECT_DATA.columns.tolist()}")
         else:
             raise FileNotFoundError("project_data.csv not found")
             
@@ -92,7 +92,6 @@ def request_context():
         logger.error(f"Request context setup failed: {str(e)}")
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Internal server error")
-
 
 class AnalysisRequest(BaseModel):
     # Required parameters
@@ -140,22 +139,16 @@ class AnalysisRequest(BaseModel):
     Elect_req: Optional[float] = None
     feedCcontnt: Optional[float] = None
 
-@app.on_event("startup")
-async def startup_event():
-    """Load data files when starting the application"""
-    load_data_files()
-# Add this to your API code (after loading DEFAULT_PARAMS)
-DEFAULT_PARAMS = deepcopy(model.PARAMS)  # Store pristine defaults at startup
-
 @app.post("/run_analysis")
 async def run_analysis(request: AnalysisRequest):
-    print(f"Current PARAMS at start: {model.PARAMS['construction_prd']}")  # Debug log
     try:
         # Validate we have the required data
         if MULTIPLIER_DATA is None or PROJECT_DATA is None:
             raise HTTPException(status_code=500, detail="Data files not loaded")
         
-        # Update model parameters from request (only if provided)
+        logger.info(f"Processing request for {request.location}/{request.product}")
+
+        # Update model parameters from request
         if request.operating_prd is not None:
             model.PARAMS['operating_prd'] = request.operating_prd
         if request.construction_prd is not None:
@@ -191,16 +184,61 @@ async def run_analysis(request: AnalysisRequest):
         if request.eEFF is not None:
             model.PARAMS['eEFF'] = request.eEFF
         if request.elEFF is not None:
-            model.PARAMS['elEFF'] = request.elEFF  # Assuming same as eEFF
+            model.PARAMS['elEFF'] = request.elEFF
         if request.hEFF is not None:
             model.PARAMS['hEFF'] = request.hEFF
 
-        # Filter project data for this request
-        project_data = PROJECT_DATA[
-            (PROJECT_DATA['Country'] == request.location) & 
-            (PROJECT_DATA['Main_Prod'] == request.product)
-        ]
+        # Handle custom projects
+        requested_product = str(request.product).strip().lower()
+        is_custom = requested_product == "custom"
         
+        if is_custom:
+            # Try to find country-specific custom template first
+            custom_filter = (
+                (PROJECT_DATA['Country'].str.strip() == request.location) & 
+                (PROJECT_DATA['Main_Prod'].str.strip().str.lower() == "custom")
+            )
+            project_data = PROJECT_DATA[custom_filter].copy()
+            
+            # If none found, use any custom template
+            if len(project_data) == 0:
+                project_data = PROJECT_DATA[
+                    PROJECT_DATA['Main_Prod'].str.strip().str.lower() == "custom"
+                ].copy()
+            
+            # If still empty, create from request parameters
+            if len(project_data) == 0:
+                logger.warning("Creating custom project from request parameters")
+                project_data = pd.DataFrame([{
+                    'Country': request.location,
+                    'ProcTech': 'Custom',
+                    'Feedstock': 'Custom',
+                    'Main_Prod': 'Custom',
+                    'Plant_Size': request.plant_size,
+                    'Plant_Effy': request.plant_effy,
+                    'Cap': request.Cap,
+                    'Yld': request.Yld,
+                    'Base_Yr': request.baseYear,
+                    'CAPEX': request.CAPEX,
+                    'OPEX': request.OPEX,
+                    'Feed_Price': request.Feed_Price,
+                    'Heat_req': request.Heat_req,
+                    'Elect_req': request.Elect_req,
+                    'Fuel_Price': request.Fuel_Price,
+                    'Elect_Price': request.Elect_Price,
+                    'feedEcontnt': request.feedEcontnt,
+                    'feedCcontnt': request.feedCcontnt,
+                    'corpTAX': request.corpTAX,
+                    'CO2price': request.CO2price
+                }])
+        else:
+            # Handle standard products
+            project_data = PROJECT_DATA[
+                (PROJECT_DATA['Country'] == request.location) & 
+                (PROJECT_DATA['Main_Prod'] == request.product)
+            ].copy()
+
+        # Validate we got project data
         if len(project_data) == 0:
             raise HTTPException(
                 status_code=404,
@@ -209,34 +247,11 @@ async def run_analysis(request: AnalysisRequest):
 
         # Update project data with any provided overrides
         for idx in project_data.index:
-            if request.baseYear is not None:
-                project_data.at[idx, 'Base_Yr'] = request.baseYear
-            if request.corpTAX is not None:
-                project_data.at[idx, 'corpTAX'] = request.corpTAX
-            if request.Feed_Price is not None:
-                project_data.at[idx, 'Feed_Price'] = request.Feed_Price
-            if request.Fuel_Price is not None:
-                project_data.at[idx, 'Fuel_Price'] = request.Fuel_Price
-            if request.Elect_Price is not None:
-                project_data.at[idx, 'Elect_Price'] = request.Elect_Price
-            if request.CO2price is not None:
-                project_data.at[idx, 'CO2price'] = request.CO2price
-            if request.CAPEX is not None:
-                project_data.at[idx, 'CAPEX'] = request.CAPEX
-            if request.OPEX is not None:
-                project_data.at[idx, 'OPEX'] = request.OPEX
-            if request.Cap is not None:
-                project_data.at[idx, 'Cap'] = request.Cap
-            if request.Yld is not None:
-                project_data.at[idx, 'Yld'] = request.Yld
-            if request.feedEcontnt is not None:
-                project_data.at[idx, 'feedEcontnt'] = request.feedEcontnt
-            if request.Heat_req is not None:
-                project_data.at[idx, 'Heat_req'] = request.Heat_req
-            if request.Elect_req is not None:
-                project_data.at[idx, 'Elect_req'] = request.Elect_req
-            if request.feedCcontnt is not None:
-                project_data.at[idx, 'feedCcontnt'] = request.feedCcontnt
+            for param in ['Cap', 'Yld', 'Base_Yr', 'CAPEX', 'OPEX', 'Feed_Price',
+                         'Heat_req', 'Elect_req', 'Fuel_Price', 'Elect_Price',
+                         'feedEcontnt', 'feedCcontnt', 'corpTAX', 'CO2price']:
+                if hasattr(request, param) and getattr(request, param) is not None:
+                    project_data.at[idx, param] = getattr(request, param)
 
         # Run the analysis
         results = model.Analytics_Model2(
@@ -252,12 +267,12 @@ async def run_analysis(request: AnalysisRequest):
             plant_effy=request.plant_effy
         )
         
-        # Convert results to list of dicts for JSON response
         return results.to_dict(orient='records')
 
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Analysis failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 if __name__ == "__main__":
