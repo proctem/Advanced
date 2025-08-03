@@ -103,8 +103,6 @@ class AnalysisRequest(BaseModel):
     
     # Optional parameters with defaults
     opex_mode: Optional[str] = "Inflated"
-    plant_size: Optional[str] = "Large"
-    plant_effy: Optional[str] = "High"
     carbon_value: Optional[str] = "No"
     operating_prd: Optional[int] = None
     util_fac_year1: Optional[float] = None
@@ -247,9 +245,7 @@ async def run_analysis(request: AnalysisRequest):
             plant_mode=request.plant_mode,
             fund_mode=request.fund_mode,
             opex_mode=request.opex_mode,
-            carbon_value=request.carbon_value,
-            plant_size=request.plant_size,
-            plant_effy=request.plant_effy
+            carbon_value=request.carbon_value
         )
         
         # Convert results to list of dicts for JSON response
