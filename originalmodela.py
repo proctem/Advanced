@@ -23,6 +23,9 @@ PARAMS = {
     'credit': 0.10,
     'PRIcoef': 0.3,
     'CONcoef': 0.7,
+    'ProcTech': Custom,
+    'Plant_Size': Custom,
+    'Plant_Effy': Custom,
     'tempNUM': 1000000
 }
 
