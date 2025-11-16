@@ -59,16 +59,6 @@ def load_data_files():
         logger.error(traceback.format_exc())
         raise
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize application data"""
-    try:
-        load_data_files()
-        logger.info("Application startup completed")
-    except Exception as e:
-        logger.critical(f"Startup failed: {str(e)}")
-        raise RuntimeError("Application failed to initialize")
-
 @contextmanager
 def request_context():
     """Context manager to handle request-specific state"""
