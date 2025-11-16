@@ -74,7 +74,7 @@ def request_context():
         
         yield {
             "PARAMS": model.PARAMS,
-            "multiplier_data": multiplier_data,
+            "sectorwise_multipliers": multiplier_data,
             "project_data": project_data
         }
         
