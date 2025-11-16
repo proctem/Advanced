@@ -44,7 +44,7 @@ def load_data_files():
             MULTIPLIER_DATA = pd.read_csv(multiplier_path)
             logger.info("Loaded multiplier data")
         else:
-            raise FileNotFoundError("multiplier_data.csv not found")
+            raise FileNotFoundError("sectorwise_multipliers.csv not found")
         
         # Load project data
         project_path = Path("project_data.csv")
