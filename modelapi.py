@@ -38,13 +38,19 @@ def load_data_files():
         DEFAULT_PARAMS = deepcopy(model.PARAMS)
         logger.info("Loaded default parameters")
         
-        # Load multiplier data
+        # Load multiplier data - FIXED FILENAME
         multiplier_path = Path("sectorwise_multipliers.csv")
         if multiplier_path.exists():
             MULTIPLIER_DATA = pd.read_csv(multiplier_path)
             logger.info("Loaded multiplier data")
         else:
-            raise FileNotFoundError("sectorwise_multipliers.csv not found")
+            # Also try the alternative name for backward compatibility
+            multiplier_path_alt = Path("multiplier_data.csv")
+            if multiplier_path_alt.exists():
+                MULTIPLIER_DATA = pd.read_csv(multiplier_path_alt)
+                logger.info("Loaded multiplier data from multiplier_data.csv")
+            else:
+                raise FileNotFoundError("Neither sectorwise_multipliers.csv nor multiplier_data.csv found")
         
         # Load project data
         project_path = Path("project_data.csv")
@@ -132,6 +138,7 @@ class AnalysisRequest(BaseModel):
 async def startup_event():
     """Load data files when starting the application"""
     load_data_files()
+
 # Add this to your API code (after loading DEFAULT_PARAMS)
 DEFAULT_PARAMS = deepcopy(model.PARAMS)  # Store pristine defaults at startup
 
@@ -179,7 +186,7 @@ async def run_analysis(request: AnalysisRequest):
         if request.eEFF is not None:
             model.PARAMS['eEFF'] = request.eEFF
         if request.elEFF is not None:
-            model.PARAMS['elEFF'] = request.elEFF  # Assuming same as eEFF
+            model.PARAMS['elEFF'] = request.elEFF
         if request.hEFF is not None:
             model.PARAMS['hEFF'] = request.hEFF
 
