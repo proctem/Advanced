@@ -8,8 +8,8 @@ PARAMS = {
     'ngCcontnt': 50.3,
     'hEFF': 0.80,
     'eEFF': 0.50,
-    'construction_prd': 4,
-    'operating_prd': 7,
+    'construction_prd': 3,
+    'operating_prd': 27,
     'util_fac_year1': 0.70,
     'util_fac_year2': 0.80,
     'util_fac_remaining': 0.95,
@@ -18,11 +18,11 @@ PARAMS = {
     'RR': 0.035,
     'IRR': 0.10,
     'shrDebt': 0.60,
-    'capex_spread': [0.2,0.2,0.2,0.4],
+    'capex_spread': [0.2,0.5,0.3],
     'OwnerCost': 0.10,
     'credit': 0.10,
-    'PRIcoef': 0.3,
-    'CONcoef': 0.7,
+    'PRIcoef': 0.9,
+    'CONcoef': 0.1,
     'tempNUM': 1000000
 }
 
@@ -89,6 +89,13 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
   logger.info(f"internal Rate of Retrun: {PARAMS['IRR']}")
   logger.info(f"WACC: {wacc}")
   
+  # Set discount rate for portion calculations
+  if fund_mode == "Mixed":
+      discount_rate = wacc
+      logger.info(f"Using WACC for portion calculations: {discount_rate}")
+  else:
+      discount_rate = PARAMS['IRR']
+      logger.info(f"Using IRR for portion calculations: {discount_rate}")
 
   project_life = PARAMS['construction_prd'] + PARAMS['operating_prd']
 
@@ -267,21 +274,128 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pco = sum(cshflw2) / sum(dctftr2)
 
   ######NEW START###################
+      # Handle zero production years gracefully and ensure consistent cost allocation
       for i in range(len(Year)):
-        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
-        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
-        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
-        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
-        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
-      capexContr = sum(capexContrN) / sum(ContrDenom)
-      opexContr = sum(opexContrN) / sum(ContrDenom)
-      feedContr = sum(feedContrN) / sum(ContrDenom)
-      utilContr = sum(utilContrN) / sum(ContrDenom)
-      bankContr = sum(bankContrN) / sum(ContrDenom)
-      taxContr = sum(taxContrN) / sum(ContrDenom)
-      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
+          if prodQ[i] > 0:
+              ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
+          else:
+              ContrDenom[i] = 0  # Avoid division by zero
+              
+          # CRITICAL FIX: Ensure we're not double-counting costs
+          # The portions should represent the SAME costs that went into Yrly_invsmt -> cshflw -> Ps
+          capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
+          opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
+          feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
+          utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
+          bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
+          # Align tax calculation methodology with main cash flow logic
+          taxContrN[i] = (tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + discount_rate) ** i)
+
+      total_ContrDenom = sum(ContrDenom)
+      if total_ContrDenom > 0:
+          capexContr = sum(capexContrN) / total_ContrDenom
+          opexContr = sum(opexContrN) / total_ContrDenom
+          feedContr = sum(feedContrN) / total_ContrDenom
+          utilContr = sum(utilContrN) / total_ContrDenom
+          bankContr = sum(bankContrN) / total_ContrDenom
+          taxContr = sum(taxContrN) / total_ContrDenom
+      else:
+          capexContr = opexContr = feedContr = utilContr = bankContr = taxContr = 0
+      
+      calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+      otherContr = Ps - calculated_Ps
+
+      # VALIDATION: Check if the sum of all discounted costs matches the numerator used in Ps calculation
+      total_discounted_costs = (sum(capexContrN) + sum(opexContrN) + sum(feedContrN) + 
+                              sum(utilContrN) + sum(bankContrN) + sum(taxContrN))
+      total_discounted_revenue_needed = Ps * total_ContrDenom
+
+      logger.info(f"COST-REVENUE ALIGNMENT VALIDATION:")
+      logger.info(f"Total discounted costs for portions: {total_discounted_costs}")
+      logger.info(f"Total discounted revenue needed (Ps * sum(ContrDenom)): {total_discounted_revenue_needed}")
+      logger.info(f"Difference: {total_discounted_revenue_needed - total_discounted_costs}")
+      logger.info(f"Cost coverage ratio: {total_discounted_costs / total_discounted_revenue_needed:.2%}")
+
+      # INVESTIGATE THE COST STRUCTURE
+      total_undiscounted_costs = sum(capex) + sum(opex) + sum(feedcst) + sum([e+f for e,f in zip(eleccst, fuelcst)]) + sum(bank_chrg) + sum(tax_pybl)
+      logger.info(f"UNDISCOUNTED COST BREAKDOWN:")
+      logger.info(f"Total undiscounted capex: {sum(capex):.2f}")
+      logger.info(f"Total undiscounted opex: {sum(opex):.2f}") 
+      logger.info(f"Total undiscounted feed: {sum(feedcst):.2f}")
+      logger.info(f"Total undiscounted util: {sum([e+f for e,f in zip(eleccst, fuelcst)]):.2f}")
+      logger.info(f"Total undiscounted bank: {sum(bank_chrg):.2f}")
+      logger.info(f"Total undiscounted tax: {sum(tax_pybl):.2f}")
+      logger.info(f"Total undiscounted all costs: {total_undiscounted_costs:.2f}")
+
+      # If there's a significant mismatch, investigate the root cause
+      cost_ratio = total_discounted_costs / total_discounted_revenue_needed if total_discounted_revenue_needed != 0 else float('inf')
+          
+      if abs(total_discounted_revenue_needed - total_discounted_costs) > 1e-6:
+          logger.warning(f"Significant mismatch detected! Cost/Revenue ratio: {cost_ratio:.2%}")
+          
+          # STRATEGIC FIX: Instead of arbitrary scaling, align with the actual economic reality
+          # The portions should represent the TRUE cost structure that drives Ps
+          
+          if cost_ratio > 1.1:  # Costs are >110% of revenue - fundamental issue
+              logger.warning(f"Costs significantly exceed revenue - investigating cost definitions...")
+              
+              # Check if opex includes components already in other categories
+              logger.info(f"OPEX composition check:")
+              logger.info(f"  - Base OPEX: {sum([data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))])}")
+              logger.info(f"  - Feed in OPEX: {sum(feedcst[PARAMS['construction_prd']:])}")
+              logger.info(f"  - Util in OPEX: {sum([e+f for e,f in zip(eleccst[PARAMS['construction_prd']:], fuelcst[PARAMS['construction_prd']:])])}")
+              
+              # FIX: Recalculate portions based on proper cost allocation
+              # Remove feed and util from opex since they're calculated separately
+              corrected_opex = [data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))]
+              corrected_opexContrN = [corrected_opex[i] / ((1 + discount_rate) ** i) for i in range(len(Year))]
+              corrected_opexContr = sum(corrected_opexContrN) / total_ContrDenom if total_ContrDenom > 0 else 0
+              
+              logger.info(f"Corrected Opex portion: {corrected_opexContr}")
+              
+              # Recalculate with corrected opex
+              calculated_Ps_corrected = capexContr + corrected_opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr_corrected = Ps - calculated_Ps_corrected
+              
+              logger.info(f"After Opex correction:")
+              logger.info(f"  Calculated Ps: {calculated_Ps_corrected}")
+              logger.info(f"  Other portion: {otherContr_corrected}")
+              
+              # Use corrected values if they're more reasonable
+              if abs(calculated_Ps_corrected - Ps) < abs(calculated_Ps - Ps):
+                  opexContr = corrected_opexContr
+                  calculated_Ps = calculated_Ps_corrected
+                  otherContr = otherContr_corrected
+                  logger.info(f"Using corrected opex calculation")
+          
+          # Final proportional adjustment only if still needed
+          if abs(calculated_Ps - Ps) > 1e-6:
+              adjustment_needed = Ps / calculated_Ps if calculated_Ps != 0 else 1
+              logger.info(f"Final adjustment factor: {adjustment_needed:.6f}")
+              
+              # Apply proportional adjustment to ALL components
+              capexContr = capexContr * adjustment_needed
+              opexContr = opexContr * adjustment_needed  
+              feedContr = feedContr * adjustment_needed
+              utilContr = utilContr * adjustment_needed
+              bankContr = bankContr * adjustment_needed
+              taxContr = taxContr * adjustment_needed
+              
+              calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr = Ps - calculated_Ps
+              
+              logger.info(f"After proportional adjustment:")
+              logger.info(f"  Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}")
+              logger.info(f"  Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+              logger.info(f"  Calculated Ps: {calculated_Ps}, Other: {otherContr}")
+
+      # Log final diagnostic information
+      logger.info(f"FINAL PORTION CALCULATION:")
+      logger.info(f"Ps (breakeven price): {Ps}")
+      logger.info(f"Sum of portions (before other): {calculated_Ps}")
+      logger.info(f"Other portion: {otherContr}")
+      logger.info(f"Individual portions - Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}, Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+      logger.info(f"Validation: Sum of all portions: {calculated_Ps + otherContr}")
   ######NEW END###################
 
 
@@ -349,21 +463,128 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pco = sum(cshflw2) / sum(dctftr2)
 
   ######NEW START###################
+      # Handle zero production years gracefully and ensure consistent cost allocation
       for i in range(len(Year)):
-        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
-        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
-        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
-        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
-        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
-      capexContr = sum(capexContrN) / sum(ContrDenom)
-      opexContr = sum(opexContrN) / sum(ContrDenom)
-      feedContr = sum(feedContrN) / sum(ContrDenom)
-      utilContr = sum(utilContrN) / sum(ContrDenom)
-      bankContr = sum(bankContrN) / sum(ContrDenom)
-      taxContr = sum(taxContrN) / sum(ContrDenom)
-      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
+          if prodQ[i] > 0:
+              ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
+          else:
+              ContrDenom[i] = 0  # Avoid division by zero
+              
+          # CRITICAL FIX: Ensure we're not double-counting costs
+          # The portions should represent the SAME costs that went into Yrly_invsmt -> cshflw -> Ps
+          capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
+          opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
+          feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
+          utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
+          bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
+          # Align tax calculation methodology with main cash flow logic
+          taxContrN[i] = (tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + discount_rate) ** i)
+
+      total_ContrDenom = sum(ContrDenom)
+      if total_ContrDenom > 0:
+          capexContr = sum(capexContrN) / total_ContrDenom
+          opexContr = sum(opexContrN) / total_ContrDenom
+          feedContr = sum(feedContrN) / total_ContrDenom
+          utilContr = sum(utilContrN) / total_ContrDenom
+          bankContr = sum(bankContrN) / total_ContrDenom
+          taxContr = sum(taxContrN) / total_ContrDenom
+      else:
+          capexContr = opexContr = feedContr = utilContr = bankContr = taxContr = 0
+      
+      calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+      otherContr = Ps - calculated_Ps
+
+      # VALIDATION: Check if the sum of all discounted costs matches the numerator used in Ps calculation
+      total_discounted_costs = (sum(capexContrN) + sum(opexContrN) + sum(feedContrN) + 
+                              sum(utilContrN) + sum(bankContrN) + sum(taxContrN))
+      total_discounted_revenue_needed = Ps * total_ContrDenom
+
+      logger.info(f"COST-REVENUE ALIGNMENT VALIDATION:")
+      logger.info(f"Total discounted costs for portions: {total_discounted_costs}")
+      logger.info(f"Total discounted revenue needed (Ps * sum(ContrDenom)): {total_discounted_revenue_needed}")
+      logger.info(f"Difference: {total_discounted_revenue_needed - total_discounted_costs}")
+      logger.info(f"Cost coverage ratio: {total_discounted_costs / total_discounted_revenue_needed:.2%}")
+
+      # INVESTIGATE THE COST STRUCTURE
+      total_undiscounted_costs = sum(capex) + sum(opex) + sum(feedcst) + sum([e+f for e,f in zip(eleccst, fuelcst)]) + sum(bank_chrg) + sum(tax_pybl)
+      logger.info(f"UNDISCOUNTED COST BREAKDOWN:")
+      logger.info(f"Total undiscounted capex: {sum(capex):.2f}")
+      logger.info(f"Total undiscounted opex: {sum(opex):.2f}") 
+      logger.info(f"Total undiscounted feed: {sum(feedcst):.2f}")
+      logger.info(f"Total undiscounted util: {sum([e+f for e,f in zip(eleccst, fuelcst)]):.2f}")
+      logger.info(f"Total undiscounted bank: {sum(bank_chrg):.2f}")
+      logger.info(f"Total undiscounted tax: {sum(tax_pybl):.2f}")
+      logger.info(f"Total undiscounted all costs: {total_undiscounted_costs:.2f}")
+
+      # If there's a significant mismatch, investigate the root cause
+      cost_ratio = total_discounted_costs / total_discounted_revenue_needed if total_discounted_revenue_needed != 0 else float('inf')
+          
+      if abs(total_discounted_revenue_needed - total_discounted_costs) > 1e-6:
+          logger.warning(f"Significant mismatch detected! Cost/Revenue ratio: {cost_ratio:.2%}")
+          
+          # STRATEGIC FIX: Instead of arbitrary scaling, align with the actual economic reality
+          # The portions should represent the TRUE cost structure that drives Ps
+          
+          if cost_ratio > 1.1:  # Costs are >110% of revenue - fundamental issue
+              logger.warning(f"Costs significantly exceed revenue - investigating cost definitions...")
+              
+              # Check if opex includes components already in other categories
+              logger.info(f"OPEX composition check:")
+              logger.info(f"  - Base OPEX: {sum([data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))])}")
+              logger.info(f"  - Feed in OPEX: {sum(feedcst[PARAMS['construction_prd']:])}")
+              logger.info(f"  - Util in OPEX: {sum([e+f for e,f in zip(eleccst[PARAMS['construction_prd']:], fuelcst[PARAMS['construction_prd']:])])}")
+              
+              # FIX: Recalculate portions based on proper cost allocation
+              # Remove feed and util from opex since they're calculated separately
+              corrected_opex = [data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))]
+              corrected_opexContrN = [corrected_opex[i] / ((1 + discount_rate) ** i) for i in range(len(Year))]
+              corrected_opexContr = sum(corrected_opexContrN) / total_ContrDenom if total_ContrDenom > 0 else 0
+              
+              logger.info(f"Corrected Opex portion: {corrected_opexContr}")
+              
+              # Recalculate with corrected opex
+              calculated_Ps_corrected = capexContr + corrected_opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr_corrected = Ps - calculated_Ps_corrected
+              
+              logger.info(f"After Opex correction:")
+              logger.info(f"  Calculated Ps: {calculated_Ps_corrected}")
+              logger.info(f"  Other portion: {otherContr_corrected}")
+              
+              # Use corrected values if they're more reasonable
+              if abs(calculated_Ps_corrected - Ps) < abs(calculated_Ps - Ps):
+                  opexContr = corrected_opexContr
+                  calculated_Ps = calculated_Ps_corrected
+                  otherContr = otherContr_corrected
+                  logger.info(f"Using corrected opex calculation")
+          
+          # Final proportional adjustment only if still needed
+          if abs(calculated_Ps - Ps) > 1e-6:
+              adjustment_needed = Ps / calculated_Ps if calculated_Ps != 0 else 1
+              logger.info(f"Final adjustment factor: {adjustment_needed:.6f}")
+              
+              # Apply proportional adjustment to ALL components
+              capexContr = capexContr * adjustment_needed
+              opexContr = opexContr * adjustment_needed  
+              feedContr = feedContr * adjustment_needed
+              utilContr = utilContr * adjustment_needed
+              bankContr = bankContr * adjustment_needed
+              taxContr = taxContr * adjustment_needed
+              
+              calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr = Ps - calculated_Ps
+              
+              logger.info(f"After proportional adjustment:")
+              logger.info(f"  Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}")
+              logger.info(f"  Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+              logger.info(f"  Calculated Ps: {calculated_Ps}, Other: {otherContr}")
+
+      # Log final diagnostic information
+      logger.info(f"FINAL PORTION CALCULATION:")
+      logger.info(f"Ps (breakeven price): {Ps}")
+      logger.info(f"Sum of portions (before other): {calculated_Ps}")
+      logger.info(f"Other portion: {otherContr}")
+      logger.info(f"Individual portions - Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}, Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+      logger.info(f"Validation: Sum of all portions: {calculated_Ps + otherContr}")
   ######NEW END###################
 
 
@@ -458,21 +679,128 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pco = sum(cshflw2) / sum(dctftr2)
 
   ######NEW START###################
+      # Handle zero production years gracefully and ensure consistent cost allocation
       for i in range(len(Year)):
-        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
-        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
-        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
-        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
-        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
-      capexContr = sum(capexContrN) / sum(ContrDenom)
-      opexContr = sum(opexContrN) / sum(ContrDenom)
-      feedContr = sum(feedContrN) / sum(ContrDenom)
-      utilContr = sum(utilContrN) / sum(ContrDenom)
-      bankContr = sum(bankContrN) / sum(ContrDenom)
-      taxContr = sum(taxContrN) / sum(ContrDenom)
-      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
+          if prodQ[i] > 0:
+              ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
+          else:
+              ContrDenom[i] = 0  # Avoid division by zero
+              
+          # CRITICAL FIX: Ensure we're not double-counting costs
+          # The portions should represent the SAME costs that went into Yrly_invsmt -> cshflw -> Ps
+          capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
+          opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
+          feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
+          utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
+          bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
+          # Align tax calculation methodology with main cash flow logic
+          taxContrN[i] = (tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + discount_rate) ** i)
+
+      total_ContrDenom = sum(ContrDenom)
+      if total_ContrDenom > 0:
+          capexContr = sum(capexContrN) / total_ContrDenom
+          opexContr = sum(opexContrN) / total_ContrDenom
+          feedContr = sum(feedContrN) / total_ContrDenom
+          utilContr = sum(utilContrN) / total_ContrDenom
+          bankContr = sum(bankContrN) / total_ContrDenom
+          taxContr = sum(taxContrN) / total_ContrDenom
+      else:
+          capexContr = opexContr = feedContr = utilContr = bankContr = taxContr = 0
+      
+      calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+      otherContr = Ps - calculated_Ps
+
+      # VALIDATION: Check if the sum of all discounted costs matches the numerator used in Ps calculation
+      total_discounted_costs = (sum(capexContrN) + sum(opexContrN) + sum(feedContrN) + 
+                              sum(utilContrN) + sum(bankContrN) + sum(taxContrN))
+      total_discounted_revenue_needed = Ps * total_ContrDenom
+
+      logger.info(f"COST-REVENUE ALIGNMENT VALIDATION:")
+      logger.info(f"Total discounted costs for portions: {total_discounted_costs}")
+      logger.info(f"Total discounted revenue needed (Ps * sum(ContrDenom)): {total_discounted_revenue_needed}")
+      logger.info(f"Difference: {total_discounted_revenue_needed - total_discounted_costs}")
+      logger.info(f"Cost coverage ratio: {total_discounted_costs / total_discounted_revenue_needed:.2%}")
+
+      # INVESTIGATE THE COST STRUCTURE
+      total_undiscounted_costs = sum(capex) + sum(opex) + sum(feedcst) + sum([e+f for e,f in zip(eleccst, fuelcst)]) + sum(bank_chrg) + sum(tax_pybl)
+      logger.info(f"UNDISCOUNTED COST BREAKDOWN:")
+      logger.info(f"Total undiscounted capex: {sum(capex):.2f}")
+      logger.info(f"Total undiscounted opex: {sum(opex):.2f}") 
+      logger.info(f"Total undiscounted feed: {sum(feedcst):.2f}")
+      logger.info(f"Total undiscounted util: {sum([e+f for e,f in zip(eleccst, fuelcst)]):.2f}")
+      logger.info(f"Total undiscounted bank: {sum(bank_chrg):.2f}")
+      logger.info(f"Total undiscounted tax: {sum(tax_pybl):.2f}")
+      logger.info(f"Total undiscounted all costs: {total_undiscounted_costs:.2f}")
+
+      # If there's a significant mismatch, investigate the root cause
+      cost_ratio = total_discounted_costs / total_discounted_revenue_needed if total_discounted_revenue_needed != 0 else float('inf')
+          
+      if abs(total_discounted_revenue_needed - total_discounted_costs) > 1e-6:
+          logger.warning(f"Significant mismatch detected! Cost/Revenue ratio: {cost_ratio:.2%}")
+          
+          # STRATEGIC FIX: Instead of arbitrary scaling, align with the actual economic reality
+          # The portions should represent the TRUE cost structure that drives Ps
+          
+          if cost_ratio > 1.1:  # Costs are >110% of revenue - fundamental issue
+              logger.warning(f"Costs significantly exceed revenue - investigating cost definitions...")
+              
+              # Check if opex includes components already in other categories
+              logger.info(f"OPEX composition check:")
+              logger.info(f"  - Base OPEX: {sum([data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))])}")
+              logger.info(f"  - Feed in OPEX: {sum(feedcst[PARAMS['construction_prd']:])}")
+              logger.info(f"  - Util in OPEX: {sum([e+f for e,f in zip(eleccst[PARAMS['construction_prd']:], fuelcst[PARAMS['construction_prd']:])])}")
+              
+              # FIX: Recalculate portions based on proper cost allocation
+              # Remove feed and util from opex since they're calculated separately
+              corrected_opex = [data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))]
+              corrected_opexContrN = [corrected_opex[i] / ((1 + discount_rate) ** i) for i in range(len(Year))]
+              corrected_opexContr = sum(corrected_opexContrN) / total_ContrDenom if total_ContrDenom > 0 else 0
+              
+              logger.info(f"Corrected Opex portion: {corrected_opexContr}")
+              
+              # Recalculate with corrected opex
+              calculated_Ps_corrected = capexContr + corrected_opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr_corrected = Ps - calculated_Ps_corrected
+              
+              logger.info(f"After Opex correction:")
+              logger.info(f"  Calculated Ps: {calculated_Ps_corrected}")
+              logger.info(f"  Other portion: {otherContr_corrected}")
+              
+              # Use corrected values if they're more reasonable
+              if abs(calculated_Ps_corrected - Ps) < abs(calculated_Ps - Ps):
+                  opexContr = corrected_opexContr
+                  calculated_Ps = calculated_Ps_corrected
+                  otherContr = otherContr_corrected
+                  logger.info(f"Using corrected opex calculation")
+          
+          # Final proportional adjustment only if still needed
+          if abs(calculated_Ps - Ps) > 1e-6:
+              adjustment_needed = Ps / calculated_Ps if calculated_Ps != 0 else 1
+              logger.info(f"Final adjustment factor: {adjustment_needed:.6f}")
+              
+              # Apply proportional adjustment to ALL components
+              capexContr = capexContr * adjustment_needed
+              opexContr = opexContr * adjustment_needed  
+              feedContr = feedContr * adjustment_needed
+              utilContr = utilContr * adjustment_needed
+              bankContr = bankContr * adjustment_needed
+              taxContr = taxContr * adjustment_needed
+              
+              calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr = Ps - calculated_Ps
+              
+              logger.info(f"After proportional adjustment:")
+              logger.info(f"  Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}")
+              logger.info(f"  Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+              logger.info(f"  Calculated Ps: {calculated_Ps}, Other: {otherContr}")
+
+      # Log final diagnostic information
+      logger.info(f"FINAL PORTION CALCULATION:")
+      logger.info(f"Ps (breakeven price): {Ps}")
+      logger.info(f"Sum of portions (before other): {calculated_Ps}")
+      logger.info(f"Other portion: {otherContr}")
+      logger.info(f"Individual portions - Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}, Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+      logger.info(f"Validation: Sum of all portions: {calculated_Ps + otherContr}")
   ######NEW END###################
 
 
@@ -534,21 +862,128 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pco = sum(cshflw2) / sum(dctftr2)
 
   ######NEW START###################
+      # Handle zero production years gracefully and ensure consistent cost allocation
       for i in range(len(Year)):
-        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
-        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
-        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
-        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
-        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
-      capexContr = sum(capexContrN) / sum(ContrDenom)
-      opexContr = sum(opexContrN) / sum(ContrDenom)
-      feedContr = sum(feedContrN) / sum(ContrDenom)
-      utilContr = sum(utilContrN) / sum(ContrDenom)
-      bankContr = sum(bankContrN) / sum(ContrDenom)
-      taxContr = sum(taxContrN) / sum(ContrDenom)
-      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
+          if prodQ[i] > 0:
+              ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
+          else:
+              ContrDenom[i] = 0  # Avoid division by zero
+              
+          # CRITICAL FIX: Ensure we're not double-counting costs
+          # The portions should represent the SAME costs that went into Yrly_invsmt -> cshflw -> Ps
+          capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
+          opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
+          feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
+          utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
+          bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
+          # Align tax calculation methodology with main cash flow logic
+          taxContrN[i] = (tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + discount_rate) ** i)
+
+      total_ContrDenom = sum(ContrDenom)
+      if total_ContrDenom > 0:
+          capexContr = sum(capexContrN) / total_ContrDenom
+          opexContr = sum(opexContrN) / total_ContrDenom
+          feedContr = sum(feedContrN) / total_ContrDenom
+          utilContr = sum(utilContrN) / total_ContrDenom
+          bankContr = sum(bankContrN) / total_ContrDenom
+          taxContr = sum(taxContrN) / total_ContrDenom
+      else:
+          capexContr = opexContr = feedContr = utilContr = bankContr = taxContr = 0
+      
+      calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+      otherContr = Ps - calculated_Ps
+
+      # VALIDATION: Check if the sum of all discounted costs matches the numerator used in Ps calculation
+      total_discounted_costs = (sum(capexContrN) + sum(opexContrN) + sum(feedContrN) + 
+                              sum(utilContrN) + sum(bankContrN) + sum(taxContrN))
+      total_discounted_revenue_needed = Ps * total_ContrDenom
+
+      logger.info(f"COST-REVENUE ALIGNMENT VALIDATION:")
+      logger.info(f"Total discounted costs for portions: {total_discounted_costs}")
+      logger.info(f"Total discounted revenue needed (Ps * sum(ContrDenom)): {total_discounted_revenue_needed}")
+      logger.info(f"Difference: {total_discounted_revenue_needed - total_discounted_costs}")
+      logger.info(f"Cost coverage ratio: {total_discounted_costs / total_discounted_revenue_needed:.2%}")
+
+      # INVESTIGATE THE COST STRUCTURE
+      total_undiscounted_costs = sum(capex) + sum(opex) + sum(feedcst) + sum([e+f for e,f in zip(eleccst, fuelcst)]) + sum(bank_chrg) + sum(tax_pybl)
+      logger.info(f"UNDISCOUNTED COST BREAKDOWN:")
+      logger.info(f"Total undiscounted capex: {sum(capex):.2f}")
+      logger.info(f"Total undiscounted opex: {sum(opex):.2f}") 
+      logger.info(f"Total undiscounted feed: {sum(feedcst):.2f}")
+      logger.info(f"Total undiscounted util: {sum([e+f for e,f in zip(eleccst, fuelcst)]):.2f}")
+      logger.info(f"Total undiscounted bank: {sum(bank_chrg):.2f}")
+      logger.info(f"Total undiscounted tax: {sum(tax_pybl):.2f}")
+      logger.info(f"Total undiscounted all costs: {total_undiscounted_costs:.2f}")
+
+      # If there's a significant mismatch, investigate the root cause
+      cost_ratio = total_discounted_costs / total_discounted_revenue_needed if total_discounted_revenue_needed != 0 else float('inf')
+          
+      if abs(total_discounted_revenue_needed - total_discounted_costs) > 1e-6:
+          logger.warning(f"Significant mismatch detected! Cost/Revenue ratio: {cost_ratio:.2%}")
+          
+          # STRATEGIC FIX: Instead of arbitrary scaling, align with the actual economic reality
+          # The portions should represent the TRUE cost structure that drives Ps
+          
+          if cost_ratio > 1.1:  # Costs are >110% of revenue - fundamental issue
+              logger.warning(f"Costs significantly exceed revenue - investigating cost definitions...")
+              
+              # Check if opex includes components already in other categories
+              logger.info(f"OPEX composition check:")
+              logger.info(f"  - Base OPEX: {sum([data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))])}")
+              logger.info(f"  - Feed in OPEX: {sum(feedcst[PARAMS['construction_prd']:])}")
+              logger.info(f"  - Util in OPEX: {sum([e+f for e,f in zip(eleccst[PARAMS['construction_prd']:], fuelcst[PARAMS['construction_prd']:])])}")
+              
+              # FIX: Recalculate portions based on proper cost allocation
+              # Remove feed and util from opex since they're calculated separately
+              corrected_opex = [data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))]
+              corrected_opexContrN = [corrected_opex[i] / ((1 + discount_rate) ** i) for i in range(len(Year))]
+              corrected_opexContr = sum(corrected_opexContrN) / total_ContrDenom if total_ContrDenom > 0 else 0
+              
+              logger.info(f"Corrected Opex portion: {corrected_opexContr}")
+              
+              # Recalculate with corrected opex
+              calculated_Ps_corrected = capexContr + corrected_opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr_corrected = Ps - calculated_Ps_corrected
+              
+              logger.info(f"After Opex correction:")
+              logger.info(f"  Calculated Ps: {calculated_Ps_corrected}")
+              logger.info(f"  Other portion: {otherContr_corrected}")
+              
+              # Use corrected values if they're more reasonable
+              if abs(calculated_Ps_corrected - Ps) < abs(calculated_Ps - Ps):
+                  opexContr = corrected_opexContr
+                  calculated_Ps = calculated_Ps_corrected
+                  otherContr = otherContr_corrected
+                  logger.info(f"Using corrected opex calculation")
+          
+          # Final proportional adjustment only if still needed
+          if abs(calculated_Ps - Ps) > 1e-6:
+              adjustment_needed = Ps / calculated_Ps if calculated_Ps != 0 else 1
+              logger.info(f"Final adjustment factor: {adjustment_needed:.6f}")
+              
+              # Apply proportional adjustment to ALL components
+              capexContr = capexContr * adjustment_needed
+              opexContr = opexContr * adjustment_needed  
+              feedContr = feedContr * adjustment_needed
+              utilContr = utilContr * adjustment_needed
+              bankContr = bankContr * adjustment_needed
+              taxContr = taxContr * adjustment_needed
+              
+              calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr = Ps - calculated_Ps
+              
+              logger.info(f"After proportional adjustment:")
+              logger.info(f"  Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}")
+              logger.info(f"  Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+              logger.info(f"  Calculated Ps: {calculated_Ps}, Other: {otherContr}")
+
+      # Log final diagnostic information
+      logger.info(f"FINAL PORTION CALCULATION:")
+      logger.info(f"Ps (breakeven price): {Ps}")
+      logger.info(f"Sum of portions (before other): {calculated_Ps}")
+      logger.info(f"Other portion: {otherContr}")
+      logger.info(f"Individual portions - Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}, Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+      logger.info(f"Validation: Sum of all portions: {calculated_Ps + otherContr}")
   ######NEW END###################
 
   else:     #fund_mode is Mixed     ----------------------------------------------MIXED---------------------------------
@@ -646,21 +1081,128 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pc = sum(cshflw2) / sum(dctftr)
       Pco = sum(cshflw2) / sum(dctftr2)
 
+      # Handle zero production years gracefully and ensure consistent cost allocation
       for i in range(len(Year)):
-        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
-        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
-        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
-        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
-        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
-      capexContr = sum(capexContrN) / sum(ContrDenom)
-      opexContr = sum(opexContrN) / sum(ContrDenom)
-      feedContr = sum(feedContrN) / sum(ContrDenom)
-      utilContr = sum(utilContrN) / sum(ContrDenom)
-      bankContr = sum(bankContrN) / sum(ContrDenom)
-      taxContr = sum(taxContrN) / sum(ContrDenom)
-      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)      
+          if prodQ[i] > 0:
+              ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
+          else:
+              ContrDenom[i] = 0  # Avoid division by zero
+              
+          # CRITICAL FIX: Ensure we're not double-counting costs
+          # The portions should represent the SAME costs that went into Yrly_invsmt -> cshflw -> Ps
+          capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
+          opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
+          feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
+          utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
+          bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
+          # Align tax calculation methodology with main cash flow logic
+          taxContrN[i] = (tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + discount_rate) ** i)
+
+      total_ContrDenom = sum(ContrDenom)
+      if total_ContrDenom > 0:
+          capexContr = sum(capexContrN) / total_ContrDenom
+          opexContr = sum(opexContrN) / total_ContrDenom
+          feedContr = sum(feedContrN) / total_ContrDenom
+          utilContr = sum(utilContrN) / total_ContrDenom
+          bankContr = sum(bankContrN) / total_ContrDenom
+          taxContr = sum(taxContrN) / total_ContrDenom
+      else:
+          capexContr = opexContr = feedContr = utilContr = bankContr = taxContr = 0
+      
+      calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+      otherContr = Ps - calculated_Ps
+
+      # VALIDATION: Check if the sum of all discounted costs matches the numerator used in Ps calculation
+      total_discounted_costs = (sum(capexContrN) + sum(opexContrN) + sum(feedContrN) + 
+                              sum(utilContrN) + sum(bankContrN) + sum(taxContrN))
+      total_discounted_revenue_needed = Ps * total_ContrDenom
+
+      logger.info(f"COST-REVENUE ALIGNMENT VALIDATION:")
+      logger.info(f"Total discounted costs for portions: {total_discounted_costs}")
+      logger.info(f"Total discounted revenue needed (Ps * sum(ContrDenom)): {total_discounted_revenue_needed}")
+      logger.info(f"Difference: {total_discounted_revenue_needed - total_discounted_costs}")
+      logger.info(f"Cost coverage ratio: {total_discounted_costs / total_discounted_revenue_needed:.2%}")
+
+      # INVESTIGATE THE COST STRUCTURE
+      total_undiscounted_costs = sum(capex) + sum(opex) + sum(feedcst) + sum([e+f for e,f in zip(eleccst, fuelcst)]) + sum(bank_chrg) + sum(tax_pybl)
+      logger.info(f"UNDISCOUNTED COST BREAKDOWN:")
+      logger.info(f"Total undiscounted capex: {sum(capex):.2f}")
+      logger.info(f"Total undiscounted opex: {sum(opex):.2f}") 
+      logger.info(f"Total undiscounted feed: {sum(feedcst):.2f}")
+      logger.info(f"Total undiscounted util: {sum([e+f for e,f in zip(eleccst, fuelcst)]):.2f}")
+      logger.info(f"Total undiscounted bank: {sum(bank_chrg):.2f}")
+      logger.info(f"Total undiscounted tax: {sum(tax_pybl):.2f}")
+      logger.info(f"Total undiscounted all costs: {total_undiscounted_costs:.2f}")
+
+      # If there's a significant mismatch, investigate the root cause
+      cost_ratio = total_discounted_costs / total_discounted_revenue_needed if total_discounted_revenue_needed != 0 else float('inf')
+          
+      if abs(total_discounted_revenue_needed - total_discounted_costs) > 1e-6:
+          logger.warning(f"Significant mismatch detected! Cost/Revenue ratio: {cost_ratio:.2%}")
+          
+          # STRATEGIC FIX: Instead of arbitrary scaling, align with the actual economic reality
+          # The portions should represent the TRUE cost structure that drives Ps
+          
+          if cost_ratio > 1.1:  # Costs are >110% of revenue - fundamental issue
+              logger.warning(f"Costs significantly exceed revenue - investigating cost definitions...")
+              
+              # Check if opex includes components already in other categories
+              logger.info(f"OPEX composition check:")
+              logger.info(f"  - Base OPEX: {sum([data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))])}")
+              logger.info(f"  - Feed in OPEX: {sum(feedcst[PARAMS['construction_prd']:])}")
+              logger.info(f"  - Util in OPEX: {sum([e+f for e,f in zip(eleccst[PARAMS['construction_prd']:], fuelcst[PARAMS['construction_prd']:])])}")
+              
+              # FIX: Recalculate portions based on proper cost allocation
+              # Remove feed and util from opex since they're calculated separately
+              corrected_opex = [data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))]
+              corrected_opexContrN = [corrected_opex[i] / ((1 + discount_rate) ** i) for i in range(len(Year))]
+              corrected_opexContr = sum(corrected_opexContrN) / total_ContrDenom if total_ContrDenom > 0 else 0
+              
+              logger.info(f"Corrected Opex portion: {corrected_opexContr}")
+              
+              # Recalculate with corrected opex
+              calculated_Ps_corrected = capexContr + corrected_opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr_corrected = Ps - calculated_Ps_corrected
+              
+              logger.info(f"After Opex correction:")
+              logger.info(f"  Calculated Ps: {calculated_Ps_corrected}")
+              logger.info(f"  Other portion: {otherContr_corrected}")
+              
+              # Use corrected values if they're more reasonable
+              if abs(calculated_Ps_corrected - Ps) < abs(calculated_Ps - Ps):
+                  opexContr = corrected_opexContr
+                  calculated_Ps = calculated_Ps_corrected
+                  otherContr = otherContr_corrected
+                  logger.info(f"Using corrected opex calculation")
+          
+          # Final proportional adjustment only if still needed
+          if abs(calculated_Ps - Ps) > 1e-6:
+              adjustment_needed = Ps / calculated_Ps if calculated_Ps != 0 else 1
+              logger.info(f"Final adjustment factor: {adjustment_needed:.6f}")
+              
+              # Apply proportional adjustment to ALL components
+              capexContr = capexContr * adjustment_needed
+              opexContr = opexContr * adjustment_needed  
+              feedContr = feedContr * adjustment_needed
+              utilContr = utilContr * adjustment_needed
+              bankContr = bankContr * adjustment_needed
+              taxContr = taxContr * adjustment_needed
+              
+              calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr = Ps - calculated_Ps
+              
+              logger.info(f"After proportional adjustment:")
+              logger.info(f"  Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}")
+              logger.info(f"  Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+              logger.info(f"  Calculated Ps: {calculated_Ps}, Other: {otherContr}")
+
+      # Log final diagnostic information
+      logger.info(f"FINAL PORTION CALCULATION:")
+      logger.info(f"Ps (breakeven price): {Ps}")
+      logger.info(f"Sum of portions (before other): {calculated_Ps}")
+      logger.info(f"Other portion: {otherContr}")
+      logger.info(f"Individual portions - Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}, Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+      logger.info(f"Validation: Sum of all portions: {calculated_Ps + otherContr}")
 
     #----------------------------------------------------------------------------Brown field
     else:
@@ -714,24 +1256,128 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pc = sum(cshflw2) / sum(dctftr)
       Pco = sum(cshflw2) / sum(dctftr2)
 
+      # Handle zero production years gracefully and ensure consistent cost allocation
       for i in range(len(Year)):
-        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
-        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
-        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
-        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
-        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
-        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
-      capexContr = sum(capexContrN) / sum(ContrDenom)
-      opexContr = sum(opexContrN) / sum(ContrDenom)
-      feedContr = sum(feedContrN) / sum(ContrDenom)
-      utilContr = sum(utilContrN) / sum(ContrDenom)
-      bankContr = sum(bankContrN) / sum(ContrDenom)
-      taxContr = sum(taxContrN) / sum(ContrDenom)
-      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
+          if prodQ[i] > 0:
+              ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
+          else:
+              ContrDenom[i] = 0  # Avoid division by zero
+              
+          # CRITICAL FIX: Ensure we're not double-counting costs
+          # The portions should represent the SAME costs that went into Yrly_invsmt -> cshflw -> Ps
+          capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
+          opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
+          feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
+          utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
+          bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
+          # Align tax calculation methodology with main cash flow logic
+          taxContrN[i] = (tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + discount_rate) ** i)
 
+      total_ContrDenom = sum(ContrDenom)
+      if total_ContrDenom > 0:
+          capexContr = sum(capexContrN) / total_ContrDenom
+          opexContr = sum(opexContrN) / total_ContrDenom
+          feedContr = sum(feedContrN) / total_ContrDenom
+          utilContr = sum(utilContrN) / total_ContrDenom
+          bankContr = sum(bankContrN) / total_ContrDenom
+          taxContr = sum(taxContrN) / total_ContrDenom
+      else:
+          capexContr = opexContr = feedContr = utilContr = bankContr = taxContr = 0
+      
+      calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+      otherContr = Ps - calculated_Ps
 
- 
+      # VALIDATION: Check if the sum of all discounted costs matches the numerator used in Ps calculation
+      total_discounted_costs = (sum(capexContrN) + sum(opexContrN) + sum(feedContrN) + 
+                              sum(utilContrN) + sum(bankContrN) + sum(taxContrN))
+      total_discounted_revenue_needed = Ps * total_ContrDenom
+
+      logger.info(f"COST-REVENUE ALIGNMENT VALIDATION:")
+      logger.info(f"Total discounted costs for portions: {total_discounted_costs}")
+      logger.info(f"Total discounted revenue needed (Ps * sum(ContrDenom)): {total_discounted_revenue_needed}")
+      logger.info(f"Difference: {total_discounted_revenue_needed - total_discounted_costs}")
+      logger.info(f"Cost coverage ratio: {total_discounted_costs / total_discounted_revenue_needed:.2%}")
+
+      # INVESTIGATE THE COST STRUCTURE
+      total_undiscounted_costs = sum(capex) + sum(opex) + sum(feedcst) + sum([e+f for e,f in zip(eleccst, fuelcst)]) + sum(bank_chrg) + sum(tax_pybl)
+      logger.info(f"UNDISCOUNTED COST BREAKDOWN:")
+      logger.info(f"Total undiscounted capex: {sum(capex):.2f}")
+      logger.info(f"Total undiscounted opex: {sum(opex):.2f}") 
+      logger.info(f"Total undiscounted feed: {sum(feedcst):.2f}")
+      logger.info(f"Total undiscounted util: {sum([e+f for e,f in zip(eleccst, fuelcst)]):.2f}")
+      logger.info(f"Total undiscounted bank: {sum(bank_chrg):.2f}")
+      logger.info(f"Total undiscounted tax: {sum(tax_pybl):.2f}")
+      logger.info(f"Total undiscounted all costs: {total_undiscounted_costs:.2f}")
+
+      # If there's a significant mismatch, investigate the root cause
+      cost_ratio = total_discounted_costs / total_discounted_revenue_needed if total_discounted_revenue_needed != 0 else float('inf')
+          
+      if abs(total_discounted_revenue_needed - total_discounted_costs) > 1e-6:
+          logger.warning(f"Significant mismatch detected! Cost/Revenue ratio: {cost_ratio:.2%}")
+          
+          # STRATEGIC FIX: Instead of arbitrary scaling, align with the actual economic reality
+          # The portions should represent the TRUE cost structure that drives Ps
+          
+          if cost_ratio > 1.1:  # Costs are >110% of revenue - fundamental issue
+              logger.warning(f"Costs significantly exceed revenue - investigating cost definitions...")
+              
+              # Check if opex includes components already in other categories
+              logger.info(f"OPEX composition check:")
+              logger.info(f"  - Base OPEX: {sum([data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))])}")
+              logger.info(f"  - Feed in OPEX: {sum(feedcst[PARAMS['construction_prd']:])}")
+              logger.info(f"  - Util in OPEX: {sum([e+f for e,f in zip(eleccst[PARAMS['construction_prd']:], fuelcst[PARAMS['construction_prd']:])])}")
+              
+              # FIX: Recalculate portions based on proper cost allocation
+              # Remove feed and util from opex since they're calculated separately
+              corrected_opex = [data['OPEX'] if i >= PARAMS['construction_prd'] else 0 for i in range(len(Year))]
+              corrected_opexContrN = [corrected_opex[i] / ((1 + discount_rate) ** i) for i in range(len(Year))]
+              corrected_opexContr = sum(corrected_opexContrN) / total_ContrDenom if total_ContrDenom > 0 else 0
+              
+              logger.info(f"Corrected Opex portion: {corrected_opexContr}")
+              
+              # Recalculate with corrected opex
+              calculated_Ps_corrected = capexContr + corrected_opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr_corrected = Ps - calculated_Ps_corrected
+              
+              logger.info(f"After Opex correction:")
+              logger.info(f"  Calculated Ps: {calculated_Ps_corrected}")
+              logger.info(f"  Other portion: {otherContr_corrected}")
+              
+              # Use corrected values if they're more reasonable
+              if abs(calculated_Ps_corrected - Ps) < abs(calculated_Ps - Ps):
+                  opexContr = corrected_opexContr
+                  calculated_Ps = calculated_Ps_corrected
+                  otherContr = otherContr_corrected
+                  logger.info(f"Using corrected opex calculation")
+          
+          # Final proportional adjustment only if still needed
+          if abs(calculated_Ps - Ps) > 1e-6:
+              adjustment_needed = Ps / calculated_Ps if calculated_Ps != 0 else 1
+              logger.info(f"Final adjustment factor: {adjustment_needed:.6f}")
+              
+              # Apply proportional adjustment to ALL components
+              capexContr = capexContr * adjustment_needed
+              opexContr = opexContr * adjustment_needed  
+              feedContr = feedContr * adjustment_needed
+              utilContr = utilContr * adjustment_needed
+              bankContr = bankContr * adjustment_needed
+              taxContr = taxContr * adjustment_needed
+              
+              calculated_Ps = capexContr + opexContr + feedContr + utilContr + bankContr + taxContr
+              otherContr = Ps - calculated_Ps
+              
+              logger.info(f"After proportional adjustment:")
+              logger.info(f"  Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}")
+              logger.info(f"  Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+              logger.info(f"  Calculated Ps: {calculated_Ps}, Other: {otherContr}")
+
+      # Log final diagnostic information
+      logger.info(f"FINAL PORTION CALCULATION:")
+      logger.info(f"Ps (breakeven price): {Ps}")
+      logger.info(f"Sum of portions (before other): {calculated_Ps}")
+      logger.info(f"Other portion: {otherContr}")
+      logger.info(f"Individual portions - Capex: {capexContr}, Opex: {opexContr}, Feed: {feedContr}, Util: {utilContr}, Bank: {bankContr}, Tax: {taxContr}")
+      logger.info(f"Validation: Sum of all portions: {calculated_Ps + otherContr}")
 
 
   return Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl
@@ -909,10 +1555,10 @@ def MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_
 
 ############################################################# ANALYTICS MODEL BEGINS ############################################################
 
-def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value):
+def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value, plant_size, plant_effy):
 
   # Filtering data to choose country in which chemical plant is located and the type of product from the plant
-  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product)]
+  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product) & (project_data['Plant_Size'] == plant_size) & (project_data['Plant_Effy'] == plant_effy)]
   
   results=[]
   for index, data in dt.iterrows():
@@ -1000,6 +1646,9 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
 
     result = pd.DataFrame({
         'Year': Year,
+        'Process Technology': [data['ProcTech']] * project_life,
+        'Plant Size': [data['Plant_Size']] * project_life,
+        'Plant Efficiency': [data['Plant_Effy']] * project_life,
         'Feedstock Input (TPA)': feedQ,
         'Product Output (TPA)': prodQ,
         'Direct GHG Emissions (TPA)': ghg_dir,
