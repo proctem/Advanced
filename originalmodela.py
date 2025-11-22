@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-###############################PARAMSS#################################
+###############################PARAMSS################################
 
 # Dictionary for hardcoded parameters
 PARAMS = {
