@@ -935,17 +935,20 @@ def MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_
 
 
 ############################################################# ANALYTICS MODEL BEGINS ############################################################
-
 def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value):
 
   # Filtering data to choose country in which chemical plant is located and the type of product from the plant
   dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product)]
-  
+
+
+  Infl = 0.02  
+
+  tempNUM = 1000000
   results=[]
   for index, data in dt.iterrows():
 
     prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind = ChemProcess_Model(data)
-    Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl = MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value)
+    Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, construction_prd, Yrly_invsmt, bank_chrg, NetRevn, tax_pybl = MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value)
     GDP_dir, GDP_ind, GDP_tot, JOB_dir, JOB_ind, JOB_tot, PAY_dir, PAY_ind, PAY_tot, TAX_dir, TAX_ind, TAX_tot, GDP_totPRI, JOB_totPRI, PAY_totPRI, GDP_dirPRI, JOB_dirPRI, PAY_dirPRI = MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_mode, carbon_value)
 
     Yrly_cost = np.array(Yrly_invsmt) + np.array(bank_chrg)
@@ -956,8 +959,8 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
     Pck = [0] * project_life
 
     for i in range(project_life):
-      Psk[i] = Pso * ((1 + PARAMS['Infl']) ** i)
-      Pck[i] = Pco * ((1 + PARAMS['Infl']) ** i)
+      Psk[i] = Pso * ((1 + Infl) ** i)
+      Pck[i] = Pco * ((1 + Infl) ** i)
 
 
     Rs = [Ps[i] * prodQ[i] for i in range(project_life)]
@@ -1005,28 +1008,31 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
 
 
 
-    pri_bothJOB[PARAMS['construction_prd']:] = JOB_totPRI[PARAMS['construction_prd']:]
-    pri_directJOB[PARAMS['construction_prd']:] = JOB_dirPRI[PARAMS['construction_prd']:]
-    pri_indirectJOB[PARAMS['construction_prd']:] = JOB_totPRI[PARAMS['construction_prd']:]  - JOB_dirPRI[PARAMS['construction_prd']:]
+    pri_bothJOB[construction_prd:] = JOB_totPRI[construction_prd:]
+    pri_directJOB[construction_prd:] = JOB_dirPRI[construction_prd:]
+    pri_indirectJOB[construction_prd:] = JOB_totPRI[construction_prd:]  - JOB_dirPRI[construction_prd:]
 
-    pri_bothJOB[:PARAMS['construction_prd']] = JOB_totPRI[:PARAMS['construction_prd']]
-    pri_directJOB[:PARAMS['construction_prd']] = JOB_dirPRI[:PARAMS['construction_prd']]
-    pri_indirectJOB[:PARAMS['construction_prd']] = JOB_totPRI[:PARAMS['construction_prd']]  - JOB_dirPRI[:PARAMS['construction_prd']]
+    pri_bothJOB[:construction_prd] = JOB_totPRI[:construction_prd]
+    pri_directJOB[:construction_prd] = JOB_dirPRI[:construction_prd]
+    pri_indirectJOB[:construction_prd] = JOB_totPRI[:construction_prd]  - JOB_dirPRI[:construction_prd]
 
 
 
-    All_bothJOB[PARAMS['construction_prd']:] = JOB_tot[PARAMS['construction_prd']:]
-    All_directJOB[PARAMS['construction_prd']:] = JOB_dir[PARAMS['construction_prd']:]
-    All_indirectJOB[PARAMS['construction_prd']:] = JOB_tot[PARAMS['construction_prd']:]  - JOB_dir[PARAMS['construction_prd']:]
+    All_bothJOB[construction_prd:] = JOB_tot[construction_prd:]
+    All_directJOB[construction_prd:] = JOB_dir[construction_prd:]
+    All_indirectJOB[construction_prd:] = JOB_tot[construction_prd:]  - JOB_dir[construction_prd:]
 
-    All_bothJOB[:PARAMS['construction_prd']] = JOB_tot[:PARAMS['construction_prd']]
-    All_directJOB[:PARAMS['construction_prd']] = JOB_dir[:PARAMS['construction_prd']]
-    All_indirectJOB[:PARAMS['construction_prd']] = JOB_tot[:PARAMS['construction_prd']]  - JOB_dir[:PARAMS['construction_prd']]
+    All_bothJOB[:construction_prd] = JOB_tot[:construction_prd]
+    All_directJOB[:construction_prd] = JOB_dir[:construction_prd]
+    All_indirectJOB[:construction_prd] = JOB_tot[:construction_prd]  - JOB_dir[:construction_prd]
 
 
 
     result = pd.DataFrame({
         'Year': Year,
+        'Process Technology': [data['ProcTech']] * project_life,
+        'Plant Size': [data['Plant_Size']] * project_life,
+        'Plant Efficiency': [data['Plant_Effy']] * project_life,
         'Feedstock Input (TPA)': feedQ,
         'Product Output (TPA)': prodQ,
         'Direct GHG Emissions (TPA)': ghg_dir,
@@ -1047,20 +1053,20 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
         'Project Finance': [fund_mode] * project_life,
         'Carbon Valued': [carbon_value] * project_life,
         'Feedstock Price ($/t)': [data['Feed_Price']] * project_life,
-        'pri_directGDP': np.array(pri_directGDP)/PARAMS['tempNUM'],
-        'pri_bothGDP': np.array(pri_bothGDP)/PARAMS['tempNUM'],
-        'All_directGDP': np.array(All_directGDP)/PARAMS['tempNUM'],
-        'All_bothGDP': np.array(All_bothGDP)/PARAMS['tempNUM'],
-        'pri_directPAY': np.array(pri_directPAY)/PARAMS['tempNUM'],
-        'pri_bothPAY': np.array(pri_bothPAY)/PARAMS['tempNUM'],
-        'All_directPAY': np.array(All_directPAY)/PARAMS['tempNUM'],
-        'All_bothPAY': np.array(All_bothPAY)/PARAMS['tempNUM'],
-        'pri_directJOB': np.array(pri_directJOB)/PARAMS['tempNUM'],
-        'pri_bothJOB': np.array(pri_bothJOB)/PARAMS['tempNUM'],
-        'All_directJOB': np.array(All_directJOB)/PARAMS['tempNUM'],
-        'All_bothJOB': np.array(All_bothJOB)/PARAMS['tempNUM'],
-        'pri_directTAX': np.array(pri_directTAX)/PARAMS['tempNUM'],
-        'pri_bothTAX': np.array(pri_bothTAX)/PARAMS['tempNUM']
+        'pri_directGDP': np.array(pri_directGDP)/tempNUM,
+        'pri_bothGDP': np.array(pri_bothGDP)/tempNUM,
+        'All_directGDP': np.array(All_directGDP)/tempNUM,
+        'All_bothGDP': np.array(All_bothGDP)/tempNUM,
+        'pri_directPAY': np.array(pri_directPAY)/tempNUM,
+        'pri_bothPAY': np.array(pri_bothPAY)/tempNUM,
+        'All_directPAY': np.array(All_directPAY)/tempNUM,
+        'All_bothPAY': np.array(All_bothPAY)/tempNUM,
+        'pri_directJOB': np.array(pri_directJOB)/tempNUM,
+        'pri_bothJOB': np.array(pri_bothJOB)/tempNUM,
+        'All_directJOB': np.array(All_directJOB)/tempNUM,
+        'All_bothJOB': np.array(All_bothJOB)/tempNUM,
+        'pri_directTAX': np.array(pri_directTAX)/tempNUM,
+        'pri_bothTAX': np.array(pri_bothTAX)/tempNUM
     })
     results.append(result)
 
