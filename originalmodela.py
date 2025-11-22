@@ -41,9 +41,15 @@ def ChemProcess_Model(data):
   util_fac[(PARAMS['construction_prd']+1)] = PARAMS['util_fac_year2']
   util_fac[(PARAMS['construction_prd']+2):] = PARAMS['util_fac_remaining']
   logger.info(f"Calculated utility factors array (util_fac): {util_fac}")
+  logger.info(f"Breakdown of util_fac values:")
+  logger.info(f"- Construction period (first {PARAMS['construction_prd']} years): {util_fac[:PARAMS['construction_prd']]}")
+  logger.info(f"- Year {PARAMS['construction_prd']} (first operating year): {util_fac[PARAMS['construction_prd']]}")
+  logger.info(f"- Year {PARAMS['construction_prd']+1} (second operating year): {util_fac[PARAMS['construction_prd']+1]}")
+  logger.info(f"- Remaining years: {util_fac[PARAMS['construction_prd']+2:]}")
 
   prodQ = util_fac * data['Cap']
   logger.info(f"Product Qty: {prodQ}")
+
 
   feedQ = prodQ / data['Yld']
 
@@ -56,9 +62,11 @@ def ChemProcess_Model(data):
 
   Relec = data['Elect_req'] * (prodQ / PARAMS['eEFF'])
 
+  #ghg_dir = Rheat * data['feedCcontnt']       
   ghg_dir = (fuelgas * data['feedCcontnt']) + (dHF * PARAMS['ngCcontnt'] / 1000)
 
   ghg_ind = Relec * PARAMS['ngCcontnt'] / 1000  
+
 
   return prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind
 
@@ -76,20 +84,28 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
 
   shrEquity = 1 - PARAMS['shrDebt']
   wacc = (PARAMS['shrDebt'] * PARAMS['RR']) + (shrEquity * PARAMS['IRR'])
+  logger.info(f"Share of Debt: {PARAMS['shrDebt']}")
+  logger.info(f"Rate of Return: {PARAMS['RR']}")
+  logger.info(f"internal Rate of Retrun: {PARAMS['IRR']}")
+  logger.info(f"WACC: {wacc}")
   
+
   project_life = PARAMS['construction_prd'] + PARAMS['operating_prd']
+
   baseYear = data['Base_Yr']
   Year = list(range(baseYear, baseYear + project_life))
 
   corpTAX = np.zeros(project_life)
   corpTAX [:] = data['corpTAX']
+
+
   corpTAX[:PARAMS['construction_prd']] = 0
 
   feedprice = [0] * project_life
   fuelprice = [0] * project_life
   elecprice = [0] * project_life
 
-  ######UPDATED: Consistent cost arrays####################
+  ######NEW START####################
   capex = [0] * project_life
   opex = [0] * project_life
   capexContrN = [0] * project_life
@@ -99,59 +115,74 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
   bankContrN = [0] * project_life
   taxContrN = [0] * project_life
   ContrDenom = [0] * project_life
-  ######UPDATED END#####################
+  ######NEW END#####################
+
 
   if opex_mode == "Inflated":
+
     for i in range(project_life):
         feedprice[i] = data["Feed_Price"] * ((1 + PARAMS['Infl']) ** i)
         fuelprice[i] = data["Fuel_Price"] * ((1 + PARAMS['Infl']) ** i)
         elecprice[i] = data["Elect_Price"] * ((1 + PARAMS['Infl']) ** i)
   else:
+
     for i in range(project_life):
         feedprice[i] = data["Feed_Price"]
         fuelprice[i] = data["Fuel_Price"]
         elecprice[i] = data["Elect_Price"]
 
+
+
+
   feedcst = feedQ * feedprice
   fuelcst = netHeat * fuelprice
   eleccst = PARAMS['elEFF'] * Relec * elecprice
 
-  CarbonTAX = [data["CO2price"]] * project_life
+
+  CarbonTAX = data["CO2price"] * project_life
+
 
   if carbon_value == "Yes":
     CO2cst = CarbonTAX * ghg_dir
   else:
     CO2cst = [0] * project_life
 
+
+  
   Yrly_invsmt = [0] * project_life
 
-  ######UPDATED: Consistent approach for all cost arrays####################
-  # CAPEX distribution
+  
+  ######UPDATED: Using second version's OPEX approach####################
   capex[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * data["CAPEX"]
   
-  # OPEX includes ALL operating costs (consistent with Yrly_invsmt)
-  for i in range(PARAMS['construction_prd'], project_life):
-      opex[i] = data["OPEX"] + feedcst[i] + fuelcst[i] + eleccst[i] + CO2cst[i]
+  # FIXED: Create an array of the same length for OPEX assignment
+  opex[PARAMS['construction_prd']:] = [data["OPEX"]] * len(opex[PARAMS['construction_prd']:])
   
-  # Yearly investment (same as before)
+  # Yrly_invsmt includes all cost components (like second version)
   Yrly_invsmt[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * data["CAPEX"]
   Yrly_invsmt[PARAMS['construction_prd']:] = data["OPEX"] + feedcst[PARAMS['construction_prd']:] + fuelcst[PARAMS['construction_prd']:] + eleccst[PARAMS['construction_prd']:] + CO2cst[PARAMS['construction_prd']:]
   ########UPDATED END####################
+  
+  logger.info(f"CAPEX distribution: {capex}")
+  logger.info(f"OPEX distribution: {opex}")
+  logger.info(f"Yearly investment: {Yrly_invsmt}")
 
+  
   bank_chrg = [0] * project_life
 
-  if fund_mode == "Debt":
+  if fund_mode == "Debt":    #----------------------------------------------------DEBT----------------------------------
     for i in range(project_life):
         if i <= (PARAMS['construction_prd'] + 1):
             bank_chrg[i] = PARAMS['RR'] * sum(Yrly_invsmt[:i+1])
         else:
             bank_chrg[i] = PARAMS['RR'] * sum(Yrly_invsmt[:PARAMS['construction_prd']+1])
 
+    
     deprCAPEX = (1-PARAMS['OwnerCost'])*sum(Yrly_invsmt[:PARAMS['construction_prd']])
     
     cshflw = [0] * project_life 
     dctftr = [0] * project_life  
-
+    #----------------------------------------------------------------------------Green field
     if plant_mode == "Green":
       Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
 
@@ -159,6 +190,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
         cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
         dctftr[i] = (prodQ[i] * (1 - (corpTAX[i]))) / ((1 + PARAMS['IRR']) ** i)
       Pstar = sum(cshflw) / sum(dctftr)
+      Rstar = Pstar * prodQ
 
       for i in range(len(Year)):
         cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
@@ -169,14 +201,21 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
         Pstark[i] = Pstaro * ((1 + PARAMS['Infl']) ** i)
       Rstark = [Pstark[i] * prodQ[i] for i in range(project_life)]
 
+      
+      #NetRevn = Rstark - Yrly_invsmt
       NetRevn = [r - y for r, y in zip(Rstark, Yrly_cost)]
 
+      
       for i in range(PARAMS['construction_prd'] + 1, project_life):
           if sum(NetRevn[:i]) - sum(bank_chrg[:i - 1]) < 0:
               bank_chrg[i] = PARAMS['RR'] * abs(sum(NetRevn[:i]) - sum(bank_chrg[:i - 1]))
           else:
               bank_chrg[i] = 0
 
+      
+      TIC = data['CAPEX'] + sum(bank_chrg)
+
+      
       tax_pybl = [0] * project_life  
       depr_asst = 0  
       cshflw2 = [0] * project_life  
@@ -194,25 +233,37 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
               if depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) < deprCAPEX:
                   tax_pybl[i] = 0
                   depr_asst += NetRevn[i]
+
                   cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
                   dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
                   cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
               elif depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) > deprCAPEX:
                   tax_pybl[i] = (NetRevn[i] + depr_asst - deprCAPEX) * (corpTAX[i])
                   depr_asst += (deprCAPEX - depr_asst)
+
                   cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
                   dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
                   cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + PARAMS['IRR']) ** i)
               elif depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) == deprCAPEX:
                   tax_pybl[i] = 0
                   depr_asst += NetRevn[i]
+
                   cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
                   dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
                   cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
               else:
                   tax_pybl[i] = NetRevn[i] * (corpTAX[i])
+
                   cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
                   dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
                   cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + PARAMS['IRR']) ** i)
 
       Ps = sum(cshflw) / sum(dctftr)
@@ -220,7 +271,31 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pc = sum(cshflw2) / sum(dctftr)
       Pco = sum(cshflw2) / sum(dctftr2)
 
-    else:  # Brown field
+  ######NEW START###################
+      for i in range(len(Year)):
+        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
+        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
+        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+      capexContr = sum(capexContrN) / sum(ContrDenom)
+      opexContr = sum(opexContrN) / sum(ContrDenom)
+      feedContr = sum(feedContrN) / sum(ContrDenom)
+      utilContr = sum(utilContrN) / sum(ContrDenom)
+      bankContr = sum(bankContrN) / sum(ContrDenom)
+      taxContr = sum(taxContrN) / sum(ContrDenom)
+      
+      # METHOD 1: Handle floating-point precision errors
+      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
+      if abs(otherContr) < 1e-10:
+          otherContr = 0.0
+  ######NEW END###################
+
+
+    #----------------------------------------------------------------------------Brown field
+    else:
       bank_chrg = [0] * project_life
       Yrly_invsmt[:PARAMS['construction_prd']] = [0] * PARAMS['construction_prd']
       Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
@@ -229,6 +304,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
         cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
         dctftr[i] = (prodQ[i] * (1 - (corpTAX[i]))) / ((1 + PARAMS['IRR']) ** i)
       Pstar = sum(cshflw) / sum(dctftr)
+      Rstar = Pstar * prodQ
 
       for i in range(len(Year)):
         cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
@@ -239,9 +315,23 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
         Pstark[i] = Pstaro * ((1 + PARAMS['Infl']) ** i)
       Rstark = [Pstark[i] * prodQ[i] for i in range(project_life)]
 
+      
+      #NetRevn = Rstark - Yrly_invsmt
       NetRevn = [r - y for r, y in zip(Rstark, Yrly_cost)]
 
+      
+      for i in range(PARAMS['construction_prd'] + 1, project_life):
+          if sum(NetRevn[:i]) - sum(bank_chrg[:i - 1]) < 0:
+              bank_chrg[i] = PARAMS['RR'] * abs(sum(NetRevn[:i]) - sum(bank_chrg[:i - 1]))
+          else:
+              bank_chrg[i] = 0
+
+      
+      TIC = data['CAPEX'] + sum(bank_chrg)
+
+      
       tax_pybl = [0] * project_life  
+      depr_asst = 0  
       cshflw2 = [0] * project_life  
       dctftr2 = [0] * project_life  
 
@@ -250,11 +340,16 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
               tax_pybl[i] = 0
               cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
               dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
               cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
           else:
               tax_pybl[i] = NetRevn[i] * (corpTAX[i])
+
               cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
               dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
               cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + PARAMS['IRR']) ** i)
 
       Ps = sum(cshflw) / sum(dctftr)
@@ -262,54 +357,412 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       Pc = sum(cshflw2) / sum(dctftr)
       Pco = sum(cshflw2) / sum(dctftr2)
 
-  elif fund_mode == "Equity":
-    # Similar structure as Debt but without bank charges
-    bank_chrg = [0] * project_life
-    # ... (rest of Equity logic similar to above)
+  ######NEW START###################
+      for i in range(len(Year)):
+        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
+        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
+        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+      capexContr = sum(capexContrN) / sum(ContrDenom)
+      opexContr = sum(opexContrN) / sum(ContrDenom)
+      feedContr = sum(feedContrN) / sum(ContrDenom)
+      utilContr = sum(utilContrN) / sum(ContrDenom)
+      bankContr = sum(bankContrN) / sum(ContrDenom)
+      taxContr = sum(taxContrN) / sum(ContrDenom)
+      
+      # METHOD 1: Handle floating-point precision errors
+      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
+      if abs(otherContr) < 1e-10:
+          otherContr = 0.0
+  ######NEW END###################
 
-  else:  # Mixed financing
-    # Similar structure but using WACC
+
+  elif fund_mode == "Equity":   #-----------------------------------------------EQUITY-------------------------------
+    bank_chrg = [0] * project_life
+
+    
+    deprCAPEX = (1-PARAMS['OwnerCost'])*sum(Yrly_invsmt[:PARAMS['construction_prd']])
+    
+    cshflw = [0] * project_life 
+    dctftr = [0] * project_life  
+    #----------------------------------------------------------------------------Green field
+    if plant_mode == "Green":
+      Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i]))) / ((1 + PARAMS['IRR']) ** i)
+      Pstar = sum(cshflw) / sum(dctftr)
+      Rstar = Pstar * prodQ
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i])) * ((1 + PARAMS['Infl']) ** i)) / ((1 + PARAMS['IRR']) ** i)
+      Pstaro = sum(cshflw) / sum(dctftr)
+      Pstark = [0] * project_life
+      for i in range(project_life):
+        Pstark[i] = Pstaro * ((1 + PARAMS['Infl']) ** i)
+      Rstark = [Pstark[i] * prodQ[i] for i in range(project_life)]
+
+      
+      #NetRevn = Rstark - Yrly_cost
+      NetRevn = [r - y for r, y in zip(Rstark, Yrly_cost)]
+
+      
+      TIC = data['CAPEX'] + sum(bank_chrg)
+
+      
+      tax_pybl = [0] * project_life  
+      depr_asst = 0 
+      cshflw2 = [0] * project_life  
+      dctftr2 = [0] * project_life 
+
+      for i in range(len(Year)):
+          if NetRevn[i] <= 0:
+              tax_pybl[i] = 0
+              cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+              dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+              cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+          else:
+              if depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) < deprCAPEX:
+                  tax_pybl[i] = 0
+                  depr_asst += NetRevn[i]
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+              elif depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) > deprCAPEX:
+                  tax_pybl[i] = (NetRevn[i] + depr_asst - deprCAPEX) * (corpTAX[i])
+                  depr_asst += (deprCAPEX - depr_asst)
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + PARAMS['IRR']) ** i)
+              elif depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) == deprCAPEX:
+                  tax_pybl[i] = 0
+                  depr_asst += NetRevn[i]
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+              else:
+                  tax_pybl[i] = NetRevn[i] * (corpTAX[i])
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + PARAMS['IRR']) ** i)
+
+      Ps = sum(cshflw) / sum(dctftr)
+      Pso = sum(cshflw) / sum(dctftr2)
+      Pc = sum(cshflw2) / sum(dctftr)
+      Pco = sum(cshflw2) / sum(dctftr2)
+
+  ######NEW START###################
+      for i in range(len(Year)):
+        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
+        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
+        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+      capexContr = sum(capexContrN) / sum(ContrDenom)
+      opexContr = sum(opexContrN) / sum(ContrDenom)
+      feedContr = sum(feedContrN) / sum(ContrDenom)
+      utilContr = sum(utilContrN) / sum(ContrDenom)
+      bankContr = sum(bankContrN) / sum(ContrDenom)
+      taxContr = sum(taxContrN) / sum(ContrDenom)
+      
+      # METHOD 1: Handle floating-point precision errors
+      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
+      if abs(otherContr) < 1e-10:
+          otherContr = 0.0
+  ######NEW END###################
+
+
+
+    #----------------------------------------------------------------------------Brown field
+    else:
+      bank_chrg = [0] * project_life
+      Yrly_invsmt[:PARAMS['construction_prd']] = [0] * PARAMS['construction_prd']
+      Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i]))) / ((1 + PARAMS['IRR']) ** i)
+      Pstar = sum(cshflw) / sum(dctftr)
+      Rstar = Pstar * prodQ
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + PARAMS['IRR']) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i])) * ((1 + PARAMS['Infl']) ** i)) / ((1 + PARAMS['IRR']) ** i)
+      Pstaro = sum(cshflw) / sum(dctftr)
+      Pstark = [0] * project_life
+      for i in range(project_life):
+        Pstark[i] = Pstaro * ((1 + PARAMS['Infl']) ** i)
+      Rstark = [Pstark[i] * prodQ[i] for i in range(project_life)]
+
+      
+      #NetRevn = Rstark - Yrly_cost
+      NetRevn = [r - y for r, y in zip(Rstark, Yrly_cost)]
+
+      
+      TIC = data['CAPEX'] + sum(bank_chrg)
+
+      
+      tax_pybl = [0] * project_life  
+      depr_asst = 0  
+      cshflw2 = [0] * project_life  
+      dctftr2 = [0] * project_life  
+
+      for i in range(len(Year)):
+          if NetRevn[i] <= 0:
+              tax_pybl[i] = 0
+              cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+              dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+              cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+          else:
+              tax_pybl[i] = NetRevn[i] * (corpTAX[i])
+
+              cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+              dctftr[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + PARAMS['IRR']) ** i)
+              cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + PARAMS['IRR']) ** i)
+
+      Ps = sum(cshflw) / sum(dctftr)
+      Pso = sum(cshflw) / sum(dctftr2)
+      Pc = sum(cshflw2) / sum(dctftr)
+      Pco = sum(cshflw2) / sum(dctftr2)
+
+  ######NEW START###################
+      for i in range(len(Year)):
+        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
+        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
+        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+      capexContr = sum(capexContrN) / sum(ContrDenom)
+      opexContr = sum(opexContrN) / sum(ContrDenom)
+      feedContr = sum(feedContrN) / sum(ContrDenom)
+      utilContr = sum(utilContrN) / sum(ContrDenom)
+      bankContr = sum(bankContrN) / sum(ContrDenom)
+      taxContr = sum(taxContrN) / sum(ContrDenom)
+      
+      # METHOD 1: Handle floating-point precision errors
+      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
+      if abs(otherContr) < 1e-10:
+          otherContr = 0.0
+  ######NEW END###################
+
+
+  else:     #fund_mode is Mixed     ----------------------------------------------MIXED---------------------------------
     for i in range(project_life):
         if i <= (PARAMS['construction_prd'] + 1):
-            bank_chrg[i] = PARAMS['RR'] * PARAMS['shrDebt'] * sum(Yrly_invsmt[:i+1])
+            bank_chrg[i] = PARAMS['RR'] * PARAMS['shrDebt'] * sum(Yrly_invsmt[:i+1])  # Changed this line
         else:
-            bank_chrg[i] = PARAMS['RR'] * PARAMS['shrDebt'] * sum(Yrly_invsmt[:PARAMS['construction_prd']+1])
-    # ... (rest of Mixed logic)
+            bank_chrg[i] = PARAMS['RR'] * PARAMS['shrDebt'] * sum(Yrly_invsmt[:PARAMS['construction_prd']+1])  # Changed this line
 
-  ######UPDATED: Consistent portion calculation for all cases###################
-  for i in range(len(Year)):
-    # Use consistent discount rate based on financing mode
-    if fund_mode == "Mixed":
-        discount_rate = wacc
+    deprCAPEX = (1-PARAMS['OwnerCost'])*sum(Yrly_invsmt[:PARAMS['construction_prd']])
+    
+    cshflw = [0] * project_life  
+    dctftr = [0] * project_life  
+    #----------------------------------------------------------------------------Green field
+    if plant_mode == "Green":
+      Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + wacc) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i]))) / ((1 + wacc) ** i)
+      Pstar = sum(cshflw) / sum(dctftr)
+      Rstar = Pstar * prodQ
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + wacc) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i])) * ((1 + PARAMS['Infl']) ** i)) / ((1 + wacc) ** i)
+      Pstaro = sum(cshflw) / sum(dctftr)
+      Pstark = [0] * project_life
+      for i in range(project_life):
+        Pstark[i] = Pstaro * ((1 + PARAMS['Infl']) ** i)
+      Rstark = [Pstark[i] * prodQ[i] for i in range(project_life)]
+
+      NetRevn = [r - y for r, y in zip(Rstark, Yrly_cost)]
+
+      for i in range(PARAMS['construction_prd'] + 1, project_life):
+          if sum(NetRevn[:i]) - sum(bank_chrg[:i - 1]) < 0:
+              bank_chrg[i] = PARAMS['RR'] * abs(sum(NetRevn[:i]) - sum(bank_chrg[:i - 1]))
+          else:
+              bank_chrg[i] = 0
+
+      TIC = data['CAPEX'] + sum(bank_chrg)
+
+      tax_pybl = [0] * project_life  
+      depr_asst = 0  
+      cshflw2 = [0] * project_life  
+      dctftr2 = [0] * project_life  
+
+      for i in range(len(Year)):
+          if NetRevn[i] <= 0:
+              tax_pybl[i] = 0
+              cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+              dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+              cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+          else:
+              if depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) < deprCAPEX:
+                  tax_pybl[i] = 0
+                  depr_asst += NetRevn[i]
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+              elif depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) > deprCAPEX:
+                  tax_pybl[i] = (NetRevn[i] + depr_asst - deprCAPEX) * (corpTAX[i])
+                  depr_asst += (deprCAPEX - depr_asst)
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + wacc) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + wacc) ** i)
+              elif depr_asst < deprCAPEX and (NetRevn[i] + depr_asst) == deprCAPEX:
+                  tax_pybl[i] = 0
+                  depr_asst += NetRevn[i]
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+              else:
+                  tax_pybl[i] = NetRevn[i] * (corpTAX[i])
+
+                  cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + wacc) ** i)
+                  dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+                  dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+                  cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + wacc) ** i)
+
+      Ps = sum(cshflw) / sum(dctftr)
+      Pso = sum(cshflw) / sum(dctftr2)
+      Pc = sum(cshflw2) / sum(dctftr)
+      Pco = sum(cshflw2) / sum(dctftr2)
+
+      for i in range(len(Year)):
+        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
+        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
+        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+      capexContr = sum(capexContrN) / sum(ContrDenom)
+      opexContr = sum(opexContrN) / sum(ContrDenom)
+      feedContr = sum(feedContrN) / sum(ContrDenom)
+      utilContr = sum(utilContrN) / sum(ContrDenom)
+      bankContr = sum(bankContrN) / sum(ContrDenom)
+      taxContr = sum(taxContrN) / sum(ContrDenom)
+      
+      # METHOD 1: Handle floating-point precision errors
+      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
+      if abs(otherContr) < 1e-10:
+          otherContr = 0.0     
+
+    #----------------------------------------------------------------------------Brown field
     else:
-        discount_rate = PARAMS['IRR']
-        
-    ContrDenom[i] = prodQ[i] / ((1 + discount_rate) ** i)
-    capexContrN[i] = (capex[i]) / ((1 + discount_rate) ** i)
-    opexContrN[i] = (opex[i]) / ((1 + discount_rate) ** i)
-    feedContrN[i] = (feedcst[i]) / ((1 + discount_rate) ** i)
-    utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + discount_rate) ** i)
-    bankContrN[i] = (bank_chrg[i]) / ((1 + discount_rate) ** i)
-    taxContrN[i] = (tax_pybl[i]) / ((1 + discount_rate) ** i)
-  
-  capexContr = sum(capexContrN) / sum(ContrDenom)
-  opexContr = sum(opexContrN) / sum(ContrDenom)
-  feedContr = sum(feedContrN) / sum(ContrDenom)
-  utilContr = sum(utilContrN) / sum(ContrDenom)
-  bankContr = sum(bankContrN) / sum(ContrDenom)
-  taxContr = sum(taxContrN) / sum(ContrDenom)
-  
-  # Handle floating-point precision
-  otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-  if abs(otherContr) < 1e-10:
-      otherContr = 0.0
-  ######UPDATED END###################
+      bank_chrg = [0] * project_life
+      Yrly_invsmt[:PARAMS['construction_prd']] = [0] * PARAMS['construction_prd']
+      Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + wacc) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i]))) / ((1 + wacc) ** i)
+      Pstar = sum(cshflw) / sum(dctftr)
+      Rstar = Pstar * prodQ
+
+      for i in range(len(Year)):
+        cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])) / ((1 + wacc) ** i)
+        dctftr[i] = (prodQ[i] * (1 - (corpTAX[i])) * ((1 + PARAMS['Infl']) ** i)) / ((1 + wacc) ** i)
+      Pstaro = sum(cshflw) / sum(dctftr)
+      Pstark = [0] * project_life
+      for i in range(project_life):
+        Pstark[i] = Pstaro * ((1 + PARAMS['Infl']) ** i)
+      Rstark = [Pstark[i] * prodQ[i] for i in range(project_life)]
+
+      NetRevn = [r - y for r, y in zip(Rstark, Yrly_cost)]
+
+      TIC = data['CAPEX'] + sum(bank_chrg)
+
+      tax_pybl = [0] * project_life  
+      depr_asst = 0  
+      cshflw2 = [0] * project_life  
+      dctftr2 = [0] * project_life  
+
+      for i in range(len(Year)):
+          if NetRevn[i] <= 0:
+              tax_pybl[i] = 0
+              cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+              dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+              cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i]) / ((1 + wacc) ** i)
+          else:
+              tax_pybl[i] = NetRevn[i] * (corpTAX[i])
+
+              cshflw[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i]) / ((1 + wacc) ** i)
+              dctftr[i] = prodQ[i] / ((1 + wacc) ** i)
+
+              dctftr2[i] = prodQ[i] * ((1 + PARAMS['Infl']) ** i) / ((1 + wacc) ** i)
+              cshflw2[i] = (Yrly_invsmt[i] + bank_chrg[i] + tax_pybl[i] * (1 - PARAMS['credit'])) / ((1 + wacc) ** i)
+
+      Ps = sum(cshflw) / sum(dctftr)
+      Pso = sum(cshflw) / sum(dctftr2)
+      Pc = sum(cshflw2) / sum(dctftr)
+      Pco = sum(cshflw2) / sum(dctftr2)
+
+      for i in range(len(Year)):
+        ContrDenom[i] = prodQ[i] / ((1 + PARAMS['IRR']) ** i)
+        capexContrN[i] = (capex[i]) / ((1 + PARAMS['IRR']) ** i)
+        opexContrN[i] = (opex[i]) / ((1 + PARAMS['IRR']) ** i)
+        feedContrN[i] = (feedcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        utilContrN[i] = (eleccst[i] + fuelcst[i]) / ((1 + PARAMS['IRR']) ** i)
+        bankContrN[i] = (bank_chrg[i]) / ((1 + PARAMS['IRR']) ** i)
+        taxContrN[i] = (tax_pybl[i]) / ((1 + PARAMS['IRR']) ** i)
+      capexContr = sum(capexContrN) / sum(ContrDenom)
+      opexContr = sum(opexContrN) / sum(ContrDenom)
+      feedContr = sum(feedContrN) / sum(ContrDenom)
+      utilContr = sum(utilContrN) / sum(ContrDenom)
+      bankContr = sum(bankContrN) / sum(ContrDenom)
+      taxContr = sum(taxContrN) / sum(ContrDenom)
+      
+      # METHOD 1: Handle floating-point precision errors
+      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
+      if abs(otherContr) < 1e-10:
+          otherContr = 0.0
+
 
   return Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl
 
-#####################################################MICROECONOMIC MODEL ENDS##################################################################################
-
-# The rest of your code (MacroEconomic_Model and Analytics_Model2) remains the same as they're already properly using PARAMS
 #####################################################MICROECONOMIC MODEL ENDS##################################################################################
 
 
@@ -574,6 +1027,7 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
 
     result = pd.DataFrame({
         'Year': Year,
+        'Process Technology': [data['ProcTech']] * project_life,
         'Feedstock Input (TPA)': feedQ,
         'Product Output (TPA)': prodQ,
         'Direct GHG Emissions (TPA)': ghg_dir,
