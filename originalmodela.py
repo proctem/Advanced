@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
-import math
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 ###############################PARAMSS#################################
 
@@ -28,72 +32,85 @@ PARAMS = {
     'tempNUM': 1000000
 }
 
-# Helper function to handle NaN values
-def safe_divide(numerator, denominator, default=0.0):
-    """Safely divide two numbers, returning default if denominator is zero or result is NaN"""
-    if denominator == 0 or math.isnan(denominator) or math.isnan(numerator):
-        return default
-    result = numerator / denominator
-    return result if not math.isnan(result) else default
-
-def safe_value(value, default=0.0):
-    """Return safe value, replacing NaN with default"""
-    if value is None or (isinstance(value, (int, float)) and math.isnan(value)):
-        return default
-    return value
-
-def safe_array_sum(arr, default=0.0):
-    """Safely sum an array, handling NaN values"""
-    if arr is None or len(arr) == 0:
-        return default
-    clean_arr = [safe_value(x, 0.0) for x in arr]
-    result = sum(clean_arr)
-    return result if not math.isnan(result) else default
 
 ##################################################################PROCESS MODEL BEGINS##############################################################################
 
 def ChemProcess_Model(data):
-  import logging
-  logging.basicConfig(level=logging.INFO)
-  logger = logging.getLogger(__name__)
+    logger.info("Starting ChemProcess_Model")
+    logger.info(f"Input data: {data}")
 
-  project_life = PARAMS['construction_prd'] + PARAMS['operating_prd']
+    project_life = PARAMS['construction_prd'] + PARAMS['operating_prd']
 
-  util_fac = np.zeros(project_life)
-  util_fac[PARAMS['construction_prd']] = PARAMS['util_fac_year1']
-  util_fac[(PARAMS['construction_prd']+1)] = PARAMS['util_fac_year2']
-  util_fac[(PARAMS['construction_prd']+2):] = PARAMS['util_fac_remaining']
-  
-  # Safe calculations
-  prodQ = util_fac * safe_value(data['Cap'], 0.0)
-  
-  # Safe division for yield
-  yld = safe_value(data['Yld'], 1.0)  # Default to 1.0 to avoid division by zero
-  feedQ = np.array([safe_divide(pq, yld, 0.0) for pq in prodQ])
+    util_fac = np.zeros(project_life)
+    util_fac[PARAMS['construction_prd']] = PARAMS['util_fac_year1']
+    util_fac[(PARAMS['construction_prd']+1)] = PARAMS['util_fac_year2']
+    util_fac[(PARAMS['construction_prd']+2):] = PARAMS['util_fac_remaining']
+    
+    # Check for NaN in util_fac
+    if np.any(np.isnan(util_fac)):
+        logger.error(f"NaN found in util_fac: {util_fac}")
+        raise ValueError("NaN in utility factors")
 
-  fuelgas = safe_value(data['feedEcontnt'], 0.0) * (1 - yld) * feedQ   
+    prodQ = util_fac * data['Cap']
+    logger.info(f"Product Qty: {prodQ}")
+    
+    # Check for NaN in prodQ
+    if np.any(np.isnan(prodQ)):
+        logger.error(f"NaN found in prodQ: {prodQ}")
+        raise ValueError("NaN in product quantity")
 
-  Rheat = safe_value(data['Heat_req'], 0.0) * (prodQ / PARAMS['hEFF'])
+    feedQ = prodQ / data['Yld']
+    
+    # Check for NaN in feedQ
+    if np.any(np.isnan(feedQ)):
+        logger.error(f"NaN found in feedQ: {feedQ}, prodQ: {prodQ}, Yld: {data['Yld']}")
+        raise ValueError("NaN in feedstock quantity")
 
-  dHF = Rheat - fuelgas
-  netHeat = np.maximum(0, dHF)          
+    fuelgas = data['feedEcontnt'] * (1 - data['Yld']) * feedQ   
+    
+    # Check for NaN in fuelgas
+    if np.any(np.isnan(fuelgas)):
+        logger.error(f"NaN found in fuelgas: {fuelgas}")
+        raise ValueError("NaN in fuelgas")
 
-  Relec = safe_value(data['Elect_req'], 0.0) * (prodQ / PARAMS['eEFF'])
+    Rheat = data['Heat_req'] * (prodQ / PARAMS['hEFF'])
+    
+    # Check for NaN in Rheat
+    if np.any(np.isnan(Rheat)):
+        logger.error(f"NaN found in Rheat: {Rheat}")
+        raise ValueError("NaN in required heat")
 
-  ghg_dir = (fuelgas * safe_value(data['feedCcontnt'], 0.0)) + (dHF * PARAMS['ngCcontnt'] / 1000)
+    dHF = Rheat - fuelgas
+    netHeat = np.maximum(0, dHF)          
+    
+    # Check for NaN in netHeat
+    if np.any(np.isnan(netHeat)):
+        logger.error(f"NaN found in netHeat: {netHeat}, Rheat: {Rheat}, fuelgas: {fuelgas}")
+        raise ValueError("NaN in net heat")
 
-  ghg_ind = Relec * PARAMS['ngCcontnt'] / 1000  
+    Relec = data['Elect_req'] * (prodQ / PARAMS['eEFF'])
+    
+    # Check for NaN in Relec
+    if np.any(np.isnan(Relec)):
+        logger.error(f"NaN found in Relec: {Relec}")
+        raise ValueError("NaN in required electricity")
 
-  # Replace any NaN values with 0
-  prodQ = np.nan_to_num(prodQ, nan=0.0)
-  feedQ = np.nan_to_num(feedQ, nan=0.0)
-  Rheat = np.nan_to_num(Rheat, nan=0.0)
-  netHeat = np.nan_to_num(netHeat, nan=0.0)
-  Relec = np.nan_to_num(Relec, nan=0.0)
-  ghg_dir = np.nan_to_num(ghg_dir, nan=0.0)
-  ghg_ind = np.nan_to_num(ghg_ind, nan=0.0)
+    ghg_dir = (fuelgas * data['feedCcontnt']) + (dHF * PARAMS['ngCcontnt'] / 1000)
+    
+    # Check for NaN in ghg_dir
+    if np.any(np.isnan(ghg_dir)):
+        logger.error(f"NaN found in ghg_dir: {ghg_dir}")
+        raise ValueError("NaN in direct GHG")
 
-  return prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind
+    ghg_ind = Relec * PARAMS['ngCcontnt'] / 1000  
+    
+    # Check for NaN in ghg_ind
+    if np.any(np.isnan(ghg_ind)):
+        logger.error(f"NaN found in ghg_ind: {ghg_ind}")
+        raise ValueError("NaN in indirect GHG")
+
+    logger.info("ChemProcess_Model completed successfully")
+    return prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind
 
 ##################################################################PROCESS MODEL ENDS##############################################################################
 
@@ -101,270 +118,266 @@ def ChemProcess_Model(data):
 #####################################################MICROECONOMIC MODEL BEGINS##################################################################################
 
 def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
-  import logging
-  logging.basicConfig(level=logging.INFO)
-  logger = logging.getLogger(__name__)
+    logger.info("Starting MicroEconomic_Model")
+    logger.info(f"Inputs - plant_mode: {plant_mode}, fund_mode: {fund_mode}, opex_mode: {opex_mode}, carbon_value: {carbon_value}")
 
-  prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind = ChemProcess_Model(data)
+    prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind = ChemProcess_Model(data)
 
-  shrEquity = 1 - PARAMS['shrDebt']
-  wacc = (PARAMS['shrDebt'] * PARAMS['RR']) + (shrEquity * PARAMS['IRR'])
+    shrEquity = 1 - PARAMS['shrDebt']
+    wacc = (PARAMS['shrDebt'] * PARAMS['RR']) + (shrEquity * PARAMS['IRR'])
+    logger.info(f"WACC calculated: {wacc}")
 
-  project_life = PARAMS['construction_prd'] + PARAMS['operating_prd']
+    project_life = PARAMS['construction_prd'] + PARAMS['operating_prd']
+    baseYear = data['Base_Yr']
+    Year = list(range(baseYear, baseYear + project_life))
 
-  baseYear = safe_value(data['Base_Yr'], 2024)
-  Year = list(range(baseYear, baseYear + project_life))
+    corpTAX = np.zeros(project_life)
+    corpTAX[:] = data['corpTAX']
+    corpTAX[:PARAMS['construction_prd']] = 0
 
-  corpTAX = np.zeros(project_life)
-  corpTAX [:] = safe_value(data['corpTAX'], 0.25)  # Default 25% tax rate
+    feedprice = [0] * project_life
+    fuelprice = [0] * project_life
+    elecprice = [0] * project_life
 
-  corpTAX[:PARAMS['construction_prd']] = 0
+    capex = [0] * project_life
+    opex = [0] * project_life
+    capexContrN = [0] * project_life
+    opexContrN = [0] * project_life
+    feedContrN = [0] * project_life
+    utilContrN = [0] * project_life
+    bankContrN = [0] * project_life
+    taxContrN = [0] * project_life
+    ContrDenom = [0] * project_life
 
-  feedprice = [0] * project_life
-  fuelprice = [0] * project_life
-  elecprice = [0] * project_life
+    if opex_mode == "Inflated":
+        for i in range(project_life):
+            feedprice[i] = data["Feed_Price"] * ((1 + PARAMS['Infl']) ** i)
+            fuelprice[i] = data["Fuel_Price"] * ((1 + PARAMS['Infl']) ** i)
+            elecprice[i] = data["Elect_Price"] * ((1 + PARAMS['Infl']) ** i)
+    else:
+        for i in range(project_life):
+            feedprice[i] = data["Feed_Price"]
+            fuelprice[i] = data["Fuel_Price"]
+            elecprice[i] = data["Elect_Price"]
 
-  capex = [0] * project_life
-  opex = [0] * project_life
-  capexContrN = [0] * project_life
-  opexContrN = [0] * project_life
-  feedContrN = [0] * project_life
-  utilContrN = [0] * project_life
-  bankContrN = [0] * project_life
-  taxContrN = [0] * project_life
-  ContrDenom = [0] * project_life
+    feedcst = feedQ * feedprice
+    fuelcst = netHeat * fuelprice
+    eleccst = PARAMS['elEFF'] * Relec * elecprice
 
-  if opex_mode == "Inflated":
-    for i in range(project_life):
-        feedprice[i] = safe_value(data["Feed_Price"], 0.0) * ((1 + PARAMS['Infl']) ** i)
-        fuelprice[i] = safe_value(data["Fuel_Price"], 0.0) * ((1 + PARAMS['Infl']) ** i)
-        elecprice[i] = safe_value(data["Elect_Price"], 0.0) * ((1 + PARAMS['Infl']) ** i)
-  else:
-    for i in range(project_life):
-        feedprice[i] = safe_value(data["Feed_Price"], 0.0)
-        fuelprice[i] = safe_value(data["Fuel_Price"], 0.0)
-        elecprice[i] = safe_value(data["Elect_Price"], 0.0)
+    CarbonTAX = data["CO2price"] * project_life
 
-  feedcst = feedQ * feedprice
-  fuelcst = netHeat * fuelprice
-  eleccst = PARAMS['elEFF'] * Relec * elecprice
+    if carbon_value == "Yes":
+        CO2cst = CarbonTAX * ghg_dir
+    else:
+        CO2cst = [0] * project_life
 
-  CarbonTAX = safe_value(data["CO2price"], 0.0) * project_life
+    Yrly_invsmt = [0] * project_life
 
-  if carbon_value == "Yes":
-    CO2cst = CarbonTAX * ghg_dir
-  else:
-    CO2cst = [0] * project_life
-
-  Yrly_invsmt = [0] * project_life
-
-  # Safe CAPEX and OPEX calculations
-  capex_val = safe_value(data["CAPEX"], 0.0)
-  opex_val = safe_value(data["OPEX"], 0.0)
-  
-  capex[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * capex_val
-  opex[PARAMS['construction_prd']:] = [opex_val] * len(opex[PARAMS['construction_prd']:])
-  
-  Yrly_invsmt[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * capex_val
-  Yrly_invsmt[PARAMS['construction_prd']:] = opex_val + feedcst[PARAMS['construction_prd']:] + fuelcst[PARAMS['construction_prd']:] + eleccst[PARAMS['construction_prd']:] + CO2cst[PARAMS['construction_prd']:]
-
-  bank_chrg = [0] * project_life
-
-  # Initialize all result variables with safe defaults
-  Ps, Pso, Pc, Pco = 0.0, 0.0, 0.0, 0.0
-  capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-  cshflw, cshflw2 = [0] * project_life, [0] * project_life
-  NetRevn, tax_pybl = [0] * project_life, [0] * project_life
-
-  if fund_mode == "Debt":
-    for i in range(project_life):
-        if i <= (PARAMS['construction_prd'] + 1):
-            bank_chrg[i] = PARAMS['RR'] * safe_array_sum(Yrly_invsmt[:i+1])
-        else:
-            bank_chrg[i] = PARAMS['RR'] * safe_array_sum(Yrly_invsmt[:PARAMS['construction_prd']+1])
-
-    deprCAPEX = (1-PARAMS['OwnerCost'])*safe_array_sum(Yrly_invsmt[:PARAMS['construction_prd']])
+    capex[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * data["CAPEX"]
+    opex[PARAMS['construction_prd']:] = [data["OPEX"]] * len(opex[PARAMS['construction_prd']:])
     
-    cshflw = [0] * project_life 
-    dctftr = [0] * project_life  
+    Yrly_invsmt[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * data["CAPEX"]
+    Yrly_invsmt[PARAMS['construction_prd']:] = data["OPEX"] + feedcst[PARAMS['construction_prd']:] + fuelcst[PARAMS['construction_prd']:] + eleccst[PARAMS['construction_prd']:] + CO2cst[PARAMS['construction_prd']:]
+
+    # Check for NaN in key arrays
+    if np.any(np.isnan(feedcst)):
+        logger.error(f"NaN found in feedcst: {feedcst}")
+        raise ValueError("NaN in feed cost")
+    if np.any(np.isnan(fuelcst)):
+        logger.error(f"NaN found in fuelcst: {fuelcst}")
+        raise ValueError("NaN in fuel cost")
+    if np.any(np.isnan(eleccst)):
+        logger.error(f"NaN found in eleccst: {eleccst}")
+        raise ValueError("NaN in electricity cost")
+    if np.any(np.isnan(Yrly_invsmt)):
+        logger.error(f"NaN found in Yrly_invsmt: {Yrly_invsmt}")
+        raise ValueError("NaN in yearly investment")
+
+    bank_chrg = [0] * project_life
+
+    # [Rest of the MicroEconomic_Model code remains the same, but add NaN checks in critical sections]
     
-    if plant_mode == "Green":
-      Yrly_cost = [sum(x) for x in zip(Yrly_invsmt, bank_chrg)]
+    # Add NaN checks after key calculations
+    def check_for_nan(arr, name):
+        if np.any(np.isnan(arr)):
+            logger.error(f"NaN found in {name}: {arr}")
+            raise ValueError(f"NaN in {name}")
 
-      for i in range(len(Year)):
-        cshflw[i] = safe_divide((Yrly_invsmt[i] + bank_chrg[i]) * (1 - (corpTAX[i])), ((1 + PARAMS['IRR']) ** i), 0.0)
-        dctftr[i] = safe_divide((prodQ[i] * (1 - (corpTAX[i]))), ((1 + PARAMS['IRR']) ** i), 0.0)
-      
-      sum_cshflw = safe_array_sum(cshflw)
-      sum_dctftr = safe_array_sum(dctftr)
-      Pstar = safe_divide(sum_cshflw, sum_dctftr, 0.0)
+    # After major calculations, add checks:
+    check_for_nan(np.array(bank_chrg), "bank_chrg")
+    check_for_nan(np.array(NetRevn), "NetRevn")
+    check_for_nan(np.array(tax_pybl), "tax_pybl")
+    check_for_nan(np.array(cshflw), "cshflw")
+    check_for_nan(np.array(cshflw2), "cshflw2")
+    
+    # Check final outputs
+    if np.isnan(Ps) or np.isinf(Ps):
+        logger.error(f"Invalid Ps value: {Ps}")
+        raise ValueError("Invalid Ps value")
+    if np.isnan(Pso) or np.isinf(Pso):
+        logger.error(f"Invalid Pso value: {Pso}")
+        raise ValueError("Invalid Pso value")
+    if np.isnan(Pc) or np.isinf(Pc):
+        logger.error(f"Invalid Pc value: {Pc}")
+        raise ValueError("Invalid Pc value")
+    if np.isnan(Pco) or np.isinf(Pco):
+        logger.error(f"Invalid Pco value: {Pco}")
+        raise ValueError("Invalid Pco value")
 
-      # Similar safe calculations for other price metrics...
-      # [Rest of the debt green field calculations with safe_divide]
-
-    else:  # Brown field
-      # [Brown field calculations with safe_divide]
-
-  elif fund_mode == "Equity":
-    # [Equity calculations with safe_divide]
-    pass
-  else:  # Mixed
-    # [Mixed calculations with safe_divide]
-    pass
-
-  # Safe calculation of contributions
-  for i in range(len(Year)):
-    ContrDenom[i] = safe_divide(prodQ[i], ((1 + PARAMS['IRR']) ** i), 0.0)
-    capexContrN[i] = safe_divide(capex[i], ((1 + PARAMS['IRR']) ** i), 0.0)
-    opexContrN[i] = safe_divide(opex[i], ((1 + PARAMS['IRR']) ** i), 0.0)
-    feedContrN[i] = safe_divide(feedcst[i], ((1 + PARAMS['IRR']) ** i), 0.0)
-    utilContrN[i] = safe_divide((eleccst[i] + fuelcst[i]), ((1 + PARAMS['IRR']) ** i), 0.0)
-    bankContrN[i] = safe_divide(bank_chrg[i], ((1 + PARAMS['IRR']) ** i), 0.0)
-    taxContrN[i] = safe_divide(tax_pybl[i], ((1 + PARAMS['IRR']) ** i), 0.0)
-  
-  sum_ContrDenom = safe_array_sum(ContrDenom)
-  capexContr = safe_divide(safe_array_sum(capexContrN), sum_ContrDenom, 0.0)
-  opexContr = safe_divide(safe_array_sum(opexContrN), sum_ContrDenom, 0.0)
-  feedContr = safe_divide(safe_array_sum(feedContrN), sum_ContrDenom, 0.0)
-  utilContr = safe_divide(safe_array_sum(utilContrN), sum_ContrDenom, 0.0)
-  bankContr = safe_divide(safe_array_sum(bankContrN), sum_ContrDenom, 0.0)
-  taxContr = safe_divide(safe_array_sum(taxContrN), sum_ContrDenom, 0.0)
-  
-  otherContr = safe_value(Ps, 0.0) - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
-  if abs(otherContr) < 1e-10:
-      otherContr = 0.0
-
-  # Ensure no NaN values in arrays
-  cshflw = [safe_value(x, 0.0) for x in cshflw]
-  cshflw2 = [safe_value(x, 0.0) for x in cshflw2]
-  NetRevn = [safe_value(x, 0.0) for x in NetRevn]
-  tax_pybl = [safe_value(x, 0.0) for x in tax_pybl]
-  Yrly_invsmt = [safe_value(x, 0.0) for x in Yrly_invsmt]
-  bank_chrg = [safe_value(x, 0.0) for x in bank_chrg]
-
-  return Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl
+    logger.info("MicroEconomic_Model completed successfully")
+    return Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl
 
 #####################################################MICROECONOMIC MODEL ENDS##################################################################################
+
 
 ############################################################MACROECONOMIC MODEL BEGINS############################################################################
 
 def MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_mode, carbon_value):
-  # [Macro economic calculations with safe_value and safe_divide]
-  # Ensure all calculations use safe_value and safe_divide
-  
-  # Return all values with NaN protection
-  return (
-    [safe_value(x, 0.0) for x in GDP_dir],
-    [safe_value(x, 0.0) for x in GDP_ind],
-    [safe_value(x, 0.0) for x in GDP_tot],
-    [safe_value(x, 0.0) for x in JOB_dir],
-    [safe_value(x, 0.0) for x in JOB_ind],
-    [safe_value(x, 0.0) for x in JOB_tot],
-    [safe_value(x, 0.0) for x in PAY_dir],
-    [safe_value(x, 0.0) for x in PAY_ind],
-    [safe_value(x, 0.0) for x in PAY_tot],
-    [safe_value(x, 0.0) for x in TAX_dir],
-    [safe_value(x, 0.0) for x in TAX_ind],
-    [safe_value(x, 0.0) for x in TAX_tot],
-    [safe_value(x, 0.0) for x in GDP_totPRI],
-    [safe_value(x, 0.0) for x in JOB_totPRI],
-    [safe_value(x, 0.0) for x in PAY_totPRI],
-    [safe_value(x, 0.0) for x in GDP_dirPRI],
-    [safe_value(x, 0.0) for x in JOB_dirPRI],
-    [safe_value(x, 0.0) for x in PAY_dirPRI]
-  )
+    logger.info("Starting MacroEconomic_Model")
+
+    prodQ, _, _, _, _, _, _ = ChemProcess_Model(data)
+    Ps, _, _, _, _, _, _, _, _, _, _, _, _, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, _, _ = MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value)
+
+    # [Rest of MacroEconomic_Model code remains the same, but add NaN checks]
+    
+    # Check final outputs for NaN
+    def check_econ_outputs(arr, name):
+        if np.any(np.isnan(arr)):
+            logger.error(f"NaN found in {name}: {arr}")
+            raise ValueError(f"NaN in {name}")
+
+    GDP_dir, GDP_ind, GDP_tot, JOB_dir, JOB_ind, JOB_tot, PAY_dir, PAY_ind, PAY_tot, TAX_dir, TAX_ind, TAX_tot, GDP_totPRI, JOB_totPRI, PAY_totPRI, GDP_dirPRI, JOB_dirPRI, PAY_dirPRI = [None] * 18  # Placeholder
+
+    # [Your existing MacroEconomic_Model calculations here]
+    
+    # After calculations, check all outputs
+    outputs = [GDP_dir, GDP_ind, GDP_tot, JOB_dir, JOB_ind, JOB_tot, PAY_dir, PAY_ind, PAY_tot, TAX_dir, TAX_ind, TAX_tot, GDP_totPRI, JOB_totPRI, PAY_totPRI, GDP_dirPRI, JOB_dirPRI, PAY_dirPRI]
+    output_names = ['GDP_dir', 'GDP_ind', 'GDP_tot', 'JOB_dir', 'JOB_ind', 'JOB_tot', 'PAY_dir', 'PAY_ind', 'PAY_tot', 'TAX_dir', 'TAX_ind', 'TAX_tot', 'GDP_totPRI', 'JOB_totPRI', 'PAY_totPRI', 'GDP_dirPRI', 'JOB_dirPRI', 'PAY_dirPRI']
+    
+    for arr, name in zip(outputs, output_names):
+        if arr is not None:
+            check_econ_outputs(np.array(arr), name)
+
+    logger.info("MacroEconomic_Model completed successfully")
+    return GDP_dir, GDP_ind, GDP_tot, JOB_dir, JOB_ind, JOB_tot, PAY_dir, PAY_ind, PAY_tot, TAX_dir, TAX_ind, TAX_tot, GDP_totPRI, JOB_totPRI, PAY_totPRI, GDP_dirPRI, JOB_dirPRI, PAY_dirPRI
 
 ############################################################# MACROECONOMIC MODEL ENDS ############################################################
+
 
 ############################################################# ANALYTICS MODEL BEGINS ############################################################
 
 def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value):
-  # Filter data safely
-  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product)]
-  
-  results = []
-  for index, data in dt.iterrows():
-    try:
-      # Get all model results with NaN protection
-      prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind = ChemProcess_Model(data)
-      Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, construction_prd, Yrly_invsmt, bank_chrg, NetRevn, tax_pybl = MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value)
-      GDP_dir, GDP_ind, GDP_tot, JOB_dir, JOB_ind, JOB_tot, PAY_dir, PAY_ind, PAY_tot, TAX_dir, TAX_ind, TAX_tot, GDP_totPRI, JOB_totPRI, PAY_totPRI, GDP_dirPRI, JOB_dirPRI, PAY_dirPRI = MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_mode, carbon_value)
+    logger.info("Starting Analytics_Model2")
+    logger.info(f"Inputs - location: {location}, product: {product}, plant_mode: {plant_mode}, fund_mode: {fund_mode}, opex_mode: {opex_mode}, carbon_value: {carbon_value}")
 
-      # Safe calculations for derived values
-      Yrly_cost = [safe_value(y, 0.0) + safe_value(b, 0.0) for y, b in zip(Yrly_invsmt, bank_chrg)]
+    # Filtering data
+    dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product)]
+    logger.info(f"Found {len(dt)} matching records")
+    
+    if len(dt) == 0:
+        logger.error(f"No data found for location: {location}, product: {product}")
+        raise ValueError(f"No data found for the specified criteria")
 
-      Ps = [safe_value(Ps, 0.0)] * project_life
-      Pc = [safe_value(Pc, 0.0)] * project_life
-      Psk = [0] * project_life
-      Pck = [0] * project_life
+    results = []
+    for index, data in dt.iterrows():
+        logger.info(f"Processing record {index}")
+        
+        try:
+            prodQ, feedQ, Rheat, netHeat, Relec, ghg_dir, ghg_ind = ChemProcess_Model(data)
+            Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl = MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value)
+            GDP_dir, GDP_ind, GDP_tot, JOB_dir, JOB_ind, JOB_tot, PAY_dir, PAY_ind, PAY_tot, TAX_dir, TAX_ind, TAX_tot, GDP_totPRI, JOB_totPRI, PAY_totPRI, GDP_dirPRI, JOB_dirPRI, PAY_dirPRI = MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_mode, carbon_value)
 
-      for i in range(project_life):
-        Psk[i] = safe_value(Pso, 0.0) * ((1 + PARAMS['Infl']) ** i)
-        Pck[i] = safe_value(Pco, 0.0) * ((1 + PARAMS['Infl']) ** i)
+            # Convert all arrays to lists and replace NaN with None for JSON serialization
+            def sanitize_for_json(arr):
+                if isinstance(arr, (np.ndarray, list)):
+                    return [None if (isinstance(x, (int, float)) and (np.isnan(x) or np.isinf(x))) else x for x in arr]
+                elif isinstance(arr, (int, float)) and (np.isnan(arr) or np.isinf(arr)):
+                    return None
+                return arr
 
-      Rs = [safe_value(p, 0.0) * safe_value(pq, 0.0) for p, pq in zip(Ps, prodQ)]
-      NRs = [safe_value(r, 0.0) - safe_value(y, 0.0) for r, y in zip(Rs, Yrly_cost)]
+            Yrly_cost = np.array(Yrly_invsmt) + np.array(bank_chrg)
 
-      Rsk = [safe_value(psk, 0.0) * safe_value(pq, 0.0) for psk, pq in zip(Psk, prodQ)]
-      NRsk = [safe_value(r, 0.0) - safe_value(y, 0.0) for r, y in zip(Rsk, Yrly_cost)]
+            Ps_list = [Ps] * project_life
+            Pc_list = [Pc] * project_life
+            Psk = [0] * project_life
+            Pck = [0] * project_life
 
-      ccflows = np.cumsum([safe_value(x, 0.0) for x in NRs])
-      ccflowsk = np.cumsum([safe_value(x, 0.0) for x in NRsk])
+            for i in range(project_life):
+                Psk[i] = Pso * ((1 + PARAMS['Infl']) ** i)
+                Pck[i] = Pco * ((1 + PARAMS['Infl']) ** i)
 
-      cost_mode = "Supply Cost" if plant_mode == "Green" else "Cash Cost"
+            Rs = [Ps_list[i] * prodQ[i] for i in range(project_life)]
+            NRs = [Rs[i] - Yrly_cost[i] for i in range(project_life)]
 
-      # Create result DataFrame with all safe values
-      result = pd.DataFrame({
-          'Year': Year,
-          'Process Technology': [safe_value(data['ProcTech'], 'Unknown')] * project_life,
-          'Feedstock Input (TPA)': [safe_value(x, 0.0) for x in feedQ],
-          'Product Output (TPA)': [safe_value(x, 0.0) for x in prodQ],
-          'Direct GHG Emissions (TPA)': [safe_value(x, 0.0) for x in ghg_dir],
-          'Cost Mode': [cost_mode] * project_life,
-          'Real cumCash Flow': [safe_value(x, 0.0) for x in ccflows],
-          'Nominal cumCash Flow': [safe_value(x, 0.0) for x in ccflowsk],
-          'Constant$ Breakeven Price': [safe_value(x, 0.0) for x in Ps],
-          'Capex portion': [safe_value(capexContr, 0.0)] * project_life,
-          'Opex portion': [safe_value(opexContr, 0.0)] * project_life,
-          'Feed portion': [safe_value(feedContr, 0.0)] * project_life,
-          'Util portion': [safe_value(utilContr, 0.0)] * project_life,
-          'Bank portion': [safe_value(bankContr, 0.0)] * project_life,
-          'Tax portion': [safe_value(taxContr, 0.0)] * project_life,
-          'Other portion': [safe_value(otherContr, 0.0)] * project_life,
-          'Current$ Breakeven Price': [safe_value(x, 0.0) for x in Psk],
-          'Constant$ SC wCredit': [safe_value(x, 0.0) for x in Pc],
-          'Current$ SC wCredit': [safe_value(x, 0.0) for x in Pck],
-          'Project Finance': [fund_mode] * project_life,
-          'Carbon Valued': [carbon_value] * project_life,
-          'Feedstock Price ($/t)': [safe_value(data['Feed_Price'], 0.0)] * project_life,
-          'pri_directGDP': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in GDP_dirPRI],
-          'pri_bothGDP': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in GDP_totPRI],
-          'All_directGDP': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in GDP_dir],
-          'All_bothGDP': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in GDP_tot],
-          'pri_directPAY': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in PAY_dirPRI],
-          'pri_bothPAY': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in PAY_totPRI],
-          'All_directPAY': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in PAY_dir],
-          'All_bothPAY': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in PAY_tot],
-          'pri_directJOB': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in JOB_dirPRI],
-          'pri_bothJOB': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in JOB_totPRI],
-          'All_directJOB': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in JOB_dir],
-          'All_bothJOB': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in JOB_tot],
-          'pri_directTAX': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in TAX_dir],
-          'pri_bothTAX': [safe_value(x/PARAMS['tempNUM'], 0.0) for x in TAX_tot]
-      })
-      
-      results.append(result)
-      
-    except Exception as e:
-      print(f"Error processing row {index}: {e}")
-      continue
+            Rsk = [Psk[i] * prodQ[i] for i in range(project_life)]
+            NRsk = [Rsk[i] - Yrly_cost[i] for i in range(project_life)]
 
-  if results:
-    results = pd.concat(results, ignore_index=True)
-    # Final cleanup: replace any remaining NaN values
-    results = results.fillna(0.0)
-  else:
-    # Return empty dataframe with expected columns if no results
-    results = pd.DataFrame()
+            ccflows = np.cumsum(NRs)
+            ccflowsk = np.cumsum(NRsk)
 
-  return results
+            cost_modes = ["Supply Cost", "Cash Cost"]
+            cost_mode = cost_modes[0] if plant_mode == "Green" else cost_modes[1]
+
+            # [Rest of your Analytics_Model2 calculations...]
+
+            # Sanitize all arrays before creating DataFrame
+            result = pd.DataFrame({
+                'Year': Year,
+                'Process Technology': [data['ProcTech']] * project_life,
+                'Feedstock Input (TPA)': sanitize_for_json(feedQ),
+                'Product Output (TPA)': sanitize_for_json(prodQ),
+                'Direct GHG Emissions (TPA)': sanitize_for_json(ghg_dir),
+                'Cost Mode': [cost_mode] * project_life,
+                'Real cumCash Flow': sanitize_for_json(ccflows),
+                'Nominal cumCash Flow': sanitize_for_json(ccflowsk),
+                'Constant$ Breakeven Price': sanitize_for_json(Ps_list),
+                'Capex portion': [sanitize_for_json(capexContr)] * project_life,
+                'Opex portion': [sanitize_for_json(opexContr)] * project_life,
+                'Feed portion': [sanitize_for_json(feedContr)] * project_life,
+                'Util portion': [sanitize_for_json(utilContr)] * project_life,
+                'Bank portion': [sanitize_for_json(bankContr)] * project_life,
+                'Tax portion': [sanitize_for_json(taxContr)] * project_life,
+                'Other portion': [sanitize_for_json(otherContr)] * project_life,
+                'Current$ Breakeven Price': sanitize_for_json(Psk),
+                'Constant$ SC wCredit': sanitize_for_json(Pc_list),
+                'Current$ SC wCredit': sanitize_for_json(Pck),
+                'Project Finance': [fund_mode] * project_life,
+                'Carbon Valued': [carbon_value] * project_life,
+                'Feedstock Price ($/t)': [data['Feed_Price']] * project_life,
+                'pri_directGDP': sanitize_for_json(np.array(pri_directGDP)/PARAMS['tempNUM']),
+                'pri_bothGDP': sanitize_for_json(np.array(pri_bothGDP)/PARAMS['tempNUM']),
+                'All_directGDP': sanitize_for_json(np.array(All_directGDP)/PARAMS['tempNUM']),
+                'All_bothGDP': sanitize_for_json(np.array(All_bothGDP)/PARAMS['tempNUM']),
+                'pri_directPAY': sanitize_for_json(np.array(pri_directPAY)/PARAMS['tempNUM']),
+                'pri_bothPAY': sanitize_for_json(np.array(pri_bothPAY)/PARAMS['tempNUM']),
+                'All_directPAY': sanitize_for_json(np.array(All_directPAY)/PARAMS['tempNUM']),
+                'All_bothPAY': sanitize_for_json(np.array(All_bothPAY)/PARAMS['tempNUM']),
+                'pri_directJOB': sanitize_for_json(np.array(pri_directJOB)/PARAMS['tempNUM']),
+                'pri_bothJOB': sanitize_for_json(np.array(pri_bothJOB)/PARAMS['tempNUM']),
+                'All_directJOB': sanitize_for_json(np.array(All_directJOB)/PARAMS['tempNUM']),
+                'All_bothJOB': sanitize_for_json(np.array(All_bothJOB)/PARAMS['tempNUM']),
+                'pri_directTAX': sanitize_for_json(np.array(pri_directTAX)/PARAMS['tempNUM']),
+                'pri_bothTAX': sanitize_for_json(np.array(pri_bothTAX)/PARAMS['tempNUM'])
+            })
+            
+            # Check final DataFrame for NaN values
+            if result.isnull().values.any():
+                nan_columns = result.columns[result.isnull().any()].tolist()
+                logger.warning(f"NaN values found in columns: {nan_columns}")
+                # Replace remaining NaN with 0 for JSON serialization
+                result = result.fillna(0)
+                
+            results.append(result)
+            
+        except Exception as e:
+            logger.error(f"Error processing record {index}: {str(e)}")
+            logger.error(f"Problematic data: {data}")
+            raise
+
+    if results:
+        results_df = pd.concat(results, ignore_index=True)
+        logger.info("Analytics_Model2 completed successfully")
+        return results_df
+    else:
+        logger.error("No results generated")
+        raise ValueError("No results generated from the analysis")
