@@ -11,309 +11,373 @@ import json
 import traceback
 from contextlib import contextmanager
 import sys
-import io
 
-# Configure logging
+# Configure comprehensive logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
     handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('api.log')
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('api.log', mode='a', encoding='utf-8')
     ]
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(title="Chemical Process Analysis API", version="1.0.0")
 
 # Store pristine defaults at startup
 DEFAULT_PARAMS = None
 MULTIPLIER_DATA = None
 PROJECT_DATA = None
 
+def log_error_with_details(error_msg, exception=None, extra_context=None):
+    """Comprehensive error logging with context"""
+    logger.error(f"🚨 {error_msg}")
+    if exception:
+        logger.error(f"Exception type: {type(exception).__name__}")
+        logger.error(f"Exception message: {str(exception)}")
+        logger.error("Stack trace:")
+        logger.error(traceback.format_exc())
+    if extra_context:
+        logger.error(f"Context: {extra_context}")
+
 def load_data_files():
-    """Load all required data files at startup"""
+    """Load all required data files at startup with comprehensive error handling"""
     global DEFAULT_PARAMS, MULTIPLIER_DATA, PROJECT_DATA
     
     try:
+        logger.info("🔄 Starting data file loading process...")
+        
         # Load default parameters
         DEFAULT_PARAMS = deepcopy(model.PARAMS)
-        logger.info("Loaded default parameters")
+        logger.info(f"✅ Loaded default parameters: {len(DEFAULT_PARAMS)} parameters")
+        logger.debug(f"Default PARAMS sample: {dict(list(DEFAULT_PARAMS.items())[:5])}")
         
-        # Load multiplier data - FIXED FILENAME
-        multiplier_path = Path("sectorwise_multipliers.csv")
-        if multiplier_path.exists():
-            MULTIPLIER_DATA = pd.read_csv(multiplier_path)
-            logger.info("Loaded multiplier data")
-        else:
-            # Also try the alternative name for backward compatibility
-            multiplier_path_alt = Path("multiplier_data.csv")
-            if multiplier_path_alt.exists():
-                MULTIPLIER_DATA = pd.read_csv(multiplier_path_alt)
-                logger.info("Loaded multiplier data from multiplier_data.csv")
-            else:
-                raise FileNotFoundError("Neither sectorwise_multipliers.csv nor multiplier_data.csv found")
+        # Load multiplier data
+        multiplier_files = ["sectorwise_multipliers.csv", "multiplier_data.csv"]
+        multiplier_loaded = False
+        
+        for multiplier_file in multiplier_files:
+            multiplier_path = Path(multiplier_file)
+            if multiplier_path.exists():
+                try:
+                    MULTIPLIER_DATA = pd.read_csv(multiplier_path)
+                    logger.info(f"✅ Loaded multiplier data from {multiplier_file}")
+                    logger.info(f"Multiplier data shape: {MULTIPLIER_DATA.shape}")
+                    logger.debug(f"Multiplier columns: {list(MULTIPLIER_DATA.columns)}")
+                    multiplier_loaded = True
+                    break
+                except Exception as e:
+                    log_error_with_details(f"Failed to load {multiplier_file}", e)
+                    continue
+        
+        if not multiplier_loaded:
+            raise FileNotFoundError(f"Could not load multiplier data from any of: {multiplier_files}")
         
         # Load project data
         project_path = Path("project_data.csv")
         if project_path.exists():
-            PROJECT_DATA = pd.read_csv(project_path)
-            logger.info("Loaded project data")
+            try:
+                PROJECT_DATA = pd.read_csv(project_path)
+                logger.info(f"✅ Loaded project data from project_data.csv")
+                logger.info(f"Project data shape: {PROJECT_DATA.shape}")
+                logger.debug(f"Project data columns: {list(PROJECT_DATA.columns)}")
+                logger.debug(f"Available countries: {PROJECT_DATA['Country'].unique()}")
+                logger.debug(f"Available products: {PROJECT_DATA['Main_Prod'].unique()}")
+            except Exception as e:
+                log_error_with_details("Failed to load project_data.csv", e)
+                raise
         else:
             raise FileNotFoundError("project_data.csv not found")
             
+        logger.info("🎉 All data files loaded successfully!")
+        
     except Exception as e:
-        logger.critical(f"Failed to load data files: {str(e)}")
-        logger.error(traceback.format_exc())
+        log_error_with_details("CRITICAL: Failed to load data files", e)
         raise
 
 @contextmanager
-def capture_model_logs():
-    """Capture all logs and outputs from the model"""
-    log_capture_string = io.StringIO()
-    ch = logging.StreamHandler(log_capture_string)
-    ch.setLevel(logging.DEBUG)
+def request_context(request_id: str = None):
+    """Context manager to handle request-specific state with comprehensive logging"""
+    request_id = request_id or f"req_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S_%f')}"
     
-    # Create a custom formatter for the captured logs
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    
-    # Add handler to the model's logger
-    model_logger = logging.getLogger('originalmodela')
-    original_handlers = model_logger.handlers[:]
-    model_logger.addHandler(ch)
-    model_logger.setLevel(logging.DEBUG)
-    
-    # Also capture stdout/stderr
-    old_stdout = sys.stdout
-    old_stderr = sys.stderr
-    captured_stdout = io.StringIO()
-    captured_stderr = io.StringIO()
+    logger.info(f"🔹 Starting request {request_id}")
     
     try:
-        sys.stdout = captured_stdout
-        sys.stderr = captured_stderr
-        yield log_capture_string, captured_stdout, captured_stderr
+        # Reset to defaults at start of each request
+        original_params = getattr(model, 'PARAMS', {})
+        model.PARAMS = deepcopy(DEFAULT_PARAMS)
+        logger.debug(f"✅ Reset PARAMS to defaults for request {request_id}")
+        logger.debug(f"Construction period after reset: {model.PARAMS['construction_prd']}")
+        
+        # Create fresh copies of data
+        multiplier_data = MULTIPLIER_DATA.copy() if MULTIPLIER_DATA is not None else None
+        project_data = PROJECT_DATA.copy() if PROJECT_DATA is not None else None
+        
+        logger.debug(f"Created fresh data copies for request {request_id}")
+        
+        yield {
+            "PARAMS": model.PARAMS,
+            "sectorwise_multipliers": multiplier_data,
+            "project_data": project_data,
+            "request_id": request_id
+        }
+        
+        logger.info(f"✅ Request {request_id} completed successfully")
+        
+    except Exception as e:
+        log_error_with_details(f"Request {request_id} context setup failed", e, {
+            "original_params": original_params,
+            "default_params": DEFAULT_PARAMS
+        })
+        raise HTTPException(status_code=500, detail="Internal server error during request setup")
     finally:
-        # Restore original state
-        sys.stdout = old_stdout
-        sys.stderr = old_stderr
-        model_logger.handlers = original_handlers
-        ch.close()
+        # Always restore original PARAMS to avoid state leakage
+        if 'original_params' in locals():
+            model.PARAMS = original_params
+            logger.debug(f"Restored original PARAMS after request {request_id}")
 
-def log_request_details(request: AnalysisRequest):
-    """Log detailed request information"""
-    logger.info("=== ANALYSIS REQUEST DETAILS ===")
-    logger.info(f"Location: {request.location}")
-    logger.info(f"Product: {request.product}")
-    logger.info(f"Plant Mode: {request.plant_mode}")
-    logger.info(f"Fund Mode: {request.fund_mode}")
-    logger.info(f"Opex Mode: {request.opex_mode}")
-    logger.info(f"Carbon Value: {request.carbon_value}")
+class AnalysisRequest(BaseModel):
+    # Required parameters
+    location: str
+    product: str
+    plant_mode: str  # "Green" or "Brown"
+    fund_mode: str   # "Debt", "Equity", or "Mixed"
     
-    # Log all provided parameters
-    provided_params = {}
-    for field, value in request.dict().items():
-        if value is not None and field not in ['location', 'product', 'plant_mode', 'fund_mode', 'opex_mode', 'carbon_value']:
-            provided_params[field] = value
-    
-    if provided_params:
-        logger.info("Provided parameter overrides:")
-        for param, value in provided_params.items():
-            logger.info(f"  {param}: {value}")
-    else:
-        logger.info("No parameter overrides provided - using defaults")
-    
-    logger.info("=== CURRENT MODEL PARAMS ===")
-    for key, value in model.PARAMS.items():
-        logger.info(f"  {key}: {value}")
-
-def log_data_details(project_data):
-    """Log details about the data being used"""
-    logger.info("=== PROJECT DATA DETAILS ===")
-    logger.info(f"Number of records: {len(project_data)}")
-    if len(project_data) > 0:
-        sample_record = project_data.iloc[0]
-        logger.info("Sample record fields:")
-        for field in project_data.columns:
-            logger.info(f"  {field}: {sample_record[field]}")
-    
-    logger.info("=== MULTIPLIER DATA DETAILS ===")
-    if MULTIPLIER_DATA is not None:
-        logger.info(f"Multiplier data shape: {MULTIPLIER_DATA.shape}")
-        logger.info(f"Multiplier columns: {list(MULTIPLIER_DATA.columns)}")
-        unique_countries = MULTIPLIER_DATA['Country'].unique()
-        logger.info(f"Available countries in multipliers: {list(unique_countries)}")
-
-def log_function_call_details():
-    """Log details about function calls and parameters"""
-    logger.info("=== FUNCTION CALL DETAILS ===")
-    logger.info(f"Analytics_Model2 function: {model.Analytics_Model2}")
-    logger.info(f"ChemProcess_Model function: {model.ChemProcess_Model}")
-    logger.info(f"MicroEconomic_Model function: {model.MicroEconomic_Model}")
-    logger.info(f"MacroEconomic_Model function: {model.MacroEconomic_Model}")
+    # Optional parameters with defaults
+    opex_mode: Optional[str] = "Inflated"
+    carbon_value: Optional[str] = "No"
+    operating_prd: Optional[int] = None
+    util_fac_year1: Optional[float] = None
+    util_fac_year2: Optional[float] = None
+    util_fac_remaining: Optional[float] = None
+    infl: Optional[float] = None
+    RR: Optional[float] = None
+    IRR: Optional[float] = None
+    construction_prd: Optional[int] = None
+    capex_spread: Optional[List[float]] = None  # [yr1, yr2, yr3]
+    shrDebt: Optional[float] = None
+    baseYear: Optional[int] = None
+    ownerCost: Optional[float] = None
+    corpTAX: Optional[float] = None
+    CO2price: Optional[float] = None
+    Feed_Price: Optional[float] = None
+    Fuel_Price: Optional[float] = None
+    Elect_Price: Optional[float] = None
+    credit: Optional[float] = None
+    CAPEX: Optional[float] = None
+    OPEX: Optional[float] = None
+    PRIcoef: Optional[float] = None
+    CONcoef: Optional[float] = None
+    EcNatGas: Optional[float] = None
+    ngCcontnt: Optional[float] = None
+    eEFF: Optional[float] = None
+    elEFF: Optional[float] = None
+    hEFF: Optional[float] = None
+    Cap: Optional[float] = None
+    Yld: Optional[float] = None
+    feedEcontnt: Optional[float] = None
+    Heat_req: Optional[float] = None
+    Elect_req: Optional[float] = None
+    feedCcontnt: Optional[float] = None
 
 @app.on_event("startup")
 async def startup_event():
     """Load data files when starting the application"""
-    load_data_files()
+    logger.info("🚀 Starting FastAPI application...")
+    try:
+        load_data_files()
+        logger.info("✅ FastAPI startup completed successfully")
+    except Exception as e:
+        log_error_with_details("CRITICAL: FastAPI startup failed", e)
+        # Don't raise here to allow the app to start, but it will fail on first request
 
-# Add this to your API code (after loading DEFAULT_PARAMS)
-DEFAULT_PARAMS = deepcopy(model.PARAMS)  # Store pristine defaults at startup
+@app.get("/")
+async def root():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "message": "Chemical Process Analysis API is running",
+        "data_loaded": all([DEFAULT_PARAMS is not None, MULTIPLIER_DATA is not None, PROJECT_DATA is not None])
+    }
+
+@app.get("/debug/params")
+async def debug_params():
+    """Debug endpoint to check current parameters"""
+    return {
+        "default_params": DEFAULT_PARAMS,
+        "current_params": model.PARAMS,
+        "multiplier_data_loaded": MULTIPLIER_DATA is not None,
+        "project_data_loaded": PROJECT_DATA is not None
+    }
 
 @app.post("/run_analysis")
 async def run_analysis(request: AnalysisRequest):
-    logger.info("=== STARTING NEW ANALYSIS REQUEST ===")
+    """Main analysis endpoint with comprehensive error handling"""
+    request_id = f"analysis_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S_%f')}"
     
-    try:
-        # Validate we have the required data
-        if MULTIPLIER_DATA is None or PROJECT_DATA is None:
-            error_msg = "Data files not loaded"
-            logger.error(error_msg)
-            raise HTTPException(status_code=500, detail=error_msg)
-        
-        # Log request details
-        log_request_details(request)
-        
-        # Update model parameters from request (only if provided)
-        param_updates = {}
-        if request.operating_prd is not None:
-            model.PARAMS['operating_prd'] = request.operating_prd
-            param_updates['operating_prd'] = request.operating_prd
-        if request.construction_prd is not None:
-            model.PARAMS['construction_prd'] = request.construction_prd
-            param_updates['construction_prd'] = request.construction_prd
-        if request.util_fac_year1 is not None:
-            model.PARAMS['util_fac_year1'] = request.util_fac_year1
-            param_updates['util_fac_year1'] = request.util_fac_year1
-        if request.util_fac_year2 is not None:
-            model.PARAMS['util_fac_year2'] = request.util_fac_year2
-            param_updates['util_fac_year2'] = request.util_fac_year2
-        if request.util_fac_remaining is not None:
-            model.PARAMS['util_fac_remaining'] = request.util_fac_remaining
-            param_updates['util_fac_remaining'] = request.util_fac_remaining
-        if request.infl is not None:
-            model.PARAMS['Infl'] = request.infl
-            param_updates['Infl'] = request.infl
-        if request.RR is not None:
-            model.PARAMS['RR'] = request.RR
-            param_updates['RR'] = request.RR
-        if request.IRR is not None:
-            model.PARAMS['IRR'] = request.IRR
-            param_updates['IRR'] = request.IRR
-        if request.capex_spread is not None:
-            model.PARAMS['capex_spread'] = request.capex_spread
-            param_updates['capex_spread'] = request.capex_spread
-        if request.shrDebt is not None:
-            model.PARAMS['shrDebt'] = request.shrDebt
-            param_updates['shrDebt'] = request.shrDebt
-        if request.ownerCost is not None:
-            model.PARAMS['OwnerCost'] = request.ownerCost
-            param_updates['OwnerCost'] = request.ownerCost
-        if request.credit is not None:
-            model.PARAMS['credit'] = request.credit
-            param_updates['credit'] = request.credit
-        if request.PRIcoef is not None:
-            model.PARAMS['PRIcoef'] = request.PRIcoef
-            param_updates['PRIcoef'] = request.PRIcoef
-        if request.CONcoef is not None:
-            model.PARAMS['CONcoef'] = request.CONcoef
-            param_updates['CONcoef'] = request.CONcoef
-        if request.EcNatGas is not None:
-            model.PARAMS['EcNatGas'] = request.EcNatGas
-            param_updates['EcNatGas'] = request.EcNatGas
-        if request.ngCcontnt is not None:
-            model.PARAMS['ngCcontnt'] = request.ngCcontnt
-            param_updates['ngCcontnt'] = request.ngCcontnt
-        if request.eEFF is not None:
-            model.PARAMS['eEFF'] = request.eEFF
-            param_updates['eEFF'] = request.eEFF
-        if request.elEFF is not None:
-            model.PARAMS['elEFF'] = request.elEFF
-            param_updates['elEFF'] = request.elEFF
-        if request.hEFF is not None:
-            model.PARAMS['hEFF'] = request.hEFF
-            param_updates['hEFF'] = request.hEFF
+    logger.info(f"🎯 Starting analysis request {request_id}")
+    logger.info(f"Request parameters: location={request.location}, product={request.product}, "
+                f"plant_mode={request.plant_mode}, fund_mode={request.fund_mode}")
+    
+    with request_context(request_id) as context:
+        try:
+            # Log parameter state at start
+            logger.debug(f"PARAMS at request start - construction_prd: {model.PARAMS['construction_prd']}")
+            
+            # Validate we have the required data
+            if MULTIPLIER_DATA is None or PROJECT_DATA is None:
+                error_msg = "Data files not loaded properly"
+                log_error_with_details(error_msg, extra_context={
+                    "multiplier_data_loaded": MULTIPLIER_DATA is not None,
+                    "project_data_loaded": PROJECT_DATA is not None
+                })
+                raise HTTPException(status_code=500, detail=error_msg)
+            
+            # Log parameter updates
+            params_updated = []
+            if request.operating_prd is not None:
+                model.PARAMS['operating_prd'] = request.operating_prd
+                params_updated.append(f"operating_prd: {request.operating_prd}")
+            if request.construction_prd is not None:
+                model.PARAMS['construction_prd'] = request.construction_prd
+                params_updated.append(f"construction_prd: {request.construction_prd}")
+            if request.util_fac_year1 is not None:
+                model.PARAMS['util_fac_year1'] = request.util_fac_year1
+                params_updated.append(f"util_fac_year1: {request.util_fac_year1}")
+            if request.util_fac_year2 is not None:
+                model.PARAMS['util_fac_year2'] = request.util_fac_year2
+                params_updated.append(f"util_fac_year2: {request.util_fac_year2}")
+            if request.util_fac_remaining is not None:
+                model.PARAMS['util_fac_remaining'] = request.util_fac_remaining
+                params_updated.append(f"util_fac_remaining: {request.util_fac_remaining}")
+            if request.infl is not None:
+                model.PARAMS['Infl'] = request.infl
+                params_updated.append(f"infl: {request.infl}")
+            if request.RR is not None:
+                model.PARAMS['RR'] = request.RR
+                params_updated.append(f"RR: {request.RR}")
+            if request.IRR is not None:
+                model.PARAMS['IRR'] = request.IRR
+                params_updated.append(f"IRR: {request.IRR}")
+            if request.capex_spread is not None:
+                model.PARAMS['capex_spread'] = request.capex_spread
+                params_updated.append(f"capex_spread: {request.capex_spread}")
+            if request.shrDebt is not None:
+                model.PARAMS['shrDebt'] = request.shrDebt
+                params_updated.append(f"shrDebt: {request.shrDebt}")
+            if request.ownerCost is not None:
+                model.PARAMS['OwnerCost'] = request.ownerCost
+                params_updated.append(f"ownerCost: {request.ownerCost}")
+            if request.credit is not None:
+                model.PARAMS['credit'] = request.credit
+                params_updated.append(f"credit: {request.credit}")
+            if request.PRIcoef is not None:
+                model.PARAMS['PRIcoef'] = request.PRIcoef
+                params_updated.append(f"PRIcoef: {request.PRIcoef}")
+            if request.CONcoef is not None:
+                model.PARAMS['CONcoef'] = request.CONcoef
+                params_updated.append(f"CONcoef: {request.CONcoef}")
+            if request.EcNatGas is not None:
+                model.PARAMS['EcNatGas'] = request.EcNatGas
+                params_updated.append(f"EcNatGas: {request.EcNatGas}")
+            if request.ngCcontnt is not None:
+                model.PARAMS['ngCcontnt'] = request.ngCcontnt
+                params_updated.append(f"ngCcontnt: {request.ngCcontnt}")
+            if request.eEFF is not None:
+                model.PARAMS['eEFF'] = request.eEFF
+                params_updated.append(f"eEFF: {request.eEFF}")
+            if request.elEFF is not None:
+                model.PARAMS['elEFF'] = request.elEFF
+                params_updated.append(f"elEFF: {request.elEFF}")
+            if request.hEFF is not None:
+                model.PARAMS['hEFF'] = request.hEFF
+                params_updated.append(f"hEFF: {request.hEFF}")
 
-        if param_updates:
-            logger.info("Updated model parameters:")
-            for param, value in param_updates.items():
-                logger.info(f"  {param}: {value}")
+            if params_updated:
+                logger.info(f"Updated parameters: {', '.join(params_updated)}")
+            
+            # Filter project data for this request
+            logger.info(f"Filtering project data for location: '{request.location}', product: '{request.product}'")
+            
+            project_data = PROJECT_DATA[
+                (PROJECT_DATA['Country'] == request.location) & 
+                (PROJECT_DATA['Main_Prod'] == request.product)
+            ]
+            
+            logger.info(f"Found {len(project_data)} matching project records")
+            
+            if len(project_data) == 0:
+                available_locations = PROJECT_DATA['Country'].unique()
+                available_products = PROJECT_DATA['Main_Prod'].unique()
+                
+                error_msg = f"No project data found for location '{request.location}' and product '{request.product}'"
+                log_error_with_details(error_msg, extra_context={
+                    "available_locations": list(available_locations),
+                    "available_products": list(available_products)
+                })
+                
+                raise HTTPException(
+                    status_code=404,
+                    detail={
+                        "message": error_msg,
+                        "available_locations": list(available_locations),
+                        "available_products": list(available_products)
+                    }
+                )
 
-        # Filter project data for this request
-        project_data = PROJECT_DATA[
-            (PROJECT_DATA['Country'] == request.location) & 
-            (PROJECT_DATA['Main_Prod'] == request.product)
-        ]
-        
-        if len(project_data) == 0:
-            error_msg = f"No project data found for location '{request.location}' and product '{request.product}'"
-            logger.error(error_msg)
-            logger.error(f"Available locations: {PROJECT_DATA['Country'].unique()}")
-            logger.error(f"Available products: {PROJECT_DATA['Main_Prod'].unique()}")
-            raise HTTPException(status_code=404, detail=error_msg)
+            # Update project data with any provided overrides
+            overrides_applied = []
+            for idx in project_data.index:
+                if request.baseYear is not None:
+                    project_data.at[idx, 'Base_Yr'] = request.baseYear
+                    overrides_applied.append(f"Base_Yr: {request.baseYear}")
+                if request.corpTAX is not None:
+                    project_data.at[idx, 'corpTAX'] = request.corpTAX
+                    overrides_applied.append(f"corpTAX: {request.corpTAX}")
+                if request.Feed_Price is not None:
+                    project_data.at[idx, 'Feed_Price'] = request.Feed_Price
+                    overrides_applied.append(f"Feed_Price: {request.Feed_Price}")
+                if request.Fuel_Price is not None:
+                    project_data.at[idx, 'Fuel_Price'] = request.Fuel_Price
+                    overrides_applied.append(f"Fuel_Price: {request.Fuel_Price}")
+                if request.Elect_Price is not None:
+                    project_data.at[idx, 'Elect_Price'] = request.Elect_Price
+                    overrides_applied.append(f"Elect_Price: {request.Elect_Price}")
+                if request.CO2price is not None:
+                    project_data.at[idx, 'CO2price'] = request.CO2price
+                    overrides_applied.append(f"CO2price: {request.CO2price}")
+                if request.CAPEX is not None:
+                    project_data.at[idx, 'CAPEX'] = request.CAPEX
+                    overrides_applied.append(f"CAPEX: {request.CAPEX}")
+                if request.OPEX is not None:
+                    project_data.at[idx, 'OPEX'] = request.OPEX
+                    overrides_applied.append(f"OPEX: {request.OPEX}")
+                if request.Cap is not None:
+                    project_data.at[idx, 'Cap'] = request.Cap
+                    overrides_applied.append(f"Cap: {request.Cap}")
+                if request.Yld is not None:
+                    project_data.at[idx, 'Yld'] = request.Yld
+                    overrides_applied.append(f"Yld: {request.Yld}")
+                if request.feedEcontnt is not None:
+                    project_data.at[idx, 'feedEcontnt'] = request.feedEcontnt
+                    overrides_applied.append(f"feedEcontnt: {request.feedEcontnt}")
+                if request.Heat_req is not None:
+                    project_data.at[idx, 'Heat_req'] = request.Heat_req
+                    overrides_applied.append(f"Heat_req: {request.Heat_req}")
+                if request.Elect_req is not None:
+                    project_data.at[idx, 'Elect_req'] = request.Elect_req
+                    overrides_applied.append(f"Elect_req: {request.Elect_req}")
+                if request.feedCcontnt is not None:
+                    project_data.at[idx, 'feedCcontnt'] = request.feedCcontnt
+                    overrides_applied.append(f"feedCcontnt: {request.feedCcontnt}")
 
-        # Log data details
-        log_data_details(project_data)
-        
-        # Update project data with any provided overrides
-        project_updates = {}
-        for idx in project_data.index:
-            if request.baseYear is not None:
-                project_data.at[idx, 'Base_Yr'] = request.baseYear
-                project_updates['Base_Yr'] = request.baseYear
-            if request.corpTAX is not None:
-                project_data.at[idx, 'corpTAX'] = request.corpTAX
-                project_updates['corpTAX'] = request.corpTAX
-            if request.Feed_Price is not None:
-                project_data.at[idx, 'Feed_Price'] = request.Feed_Price
-                project_updates['Feed_Price'] = request.Feed_Price
-            if request.Fuel_Price is not None:
-                project_data.at[idx, 'Fuel_Price'] = request.Fuel_Price
-                project_updates['Fuel_Price'] = request.Fuel_Price
-            if request.Elect_Price is not None:
-                project_data.at[idx, 'Elect_Price'] = request.Elect_Price
-                project_updates['Elect_Price'] = request.Elect_Price
-            if request.CO2price is not None:
-                project_data.at[idx, 'CO2price'] = request.CO2price
-                project_updates['CO2price'] = request.CO2price
-            if request.CAPEX is not None:
-                project_data.at[idx, 'CAPEX'] = request.CAPEX
-                project_updates['CAPEX'] = request.CAPEX
-            if request.OPEX is not None:
-                project_data.at[idx, 'OPEX'] = request.OPEX
-                project_updates['OPEX'] = request.OPEX
-            if request.Cap is not None:
-                project_data.at[idx, 'Cap'] = request.Cap
-                project_updates['Cap'] = request.Cap
-            if request.Yld is not None:
-                project_data.at[idx, 'Yld'] = request.Yld
-                project_updates['Yld'] = request.Yld
-            if request.feedEcontnt is not None:
-                project_data.at[idx, 'feedEcontnt'] = request.feedEcontnt
-                project_updates['feedEcontnt'] = request.feedEcontnt
-            if request.Heat_req is not None:
-                project_data.at[idx, 'Heat_req'] = request.Heat_req
-                project_updates['Heat_req'] = request.Heat_req
-            if request.Elect_req is not None:
-                project_data.at[idx, 'Elect_req'] = request.Elect_req
-                project_updates['Elect_req'] = request.Elect_req
-            if request.feedCcontnt is not None:
-                project_data.at[idx, 'feedCcontnt'] = request.feedCcontnt
-                project_updates['feedCcontnt'] = request.feedCcontnt
+            if overrides_applied:
+                logger.info(f"Applied project data overrides: {', '.join(set(overrides_applied))}")
 
-        if project_updates:
-            logger.info("Updated project data fields:")
-            for field, value in project_updates.items():
-                logger.info(f"  {field}: {value}")
-
-        # Log function call details
-        log_function_call_details()
-
-        # Run the analysis with comprehensive logging
-        logger.info("=== STARTING MODEL EXECUTION ===")
-        
-        with capture_model_logs() as (log_capture, stdout_capture, stderr_capture):
+            # Run the analysis
+            logger.info("🚀 Calling Analytics_Model2...")
+            
             try:
                 results = model.Analytics_Model2(
                     multiplier=MULTIPLIER_DATA,
@@ -326,97 +390,81 @@ async def run_analysis(request: AnalysisRequest):
                     carbon_value=request.carbon_value
                 )
                 
-                # Capture all logs from the model execution
-                log_contents = log_capture.getvalue()
-                stdout_contents = stdout_capture.getvalue()
-                stderr_contents = stderr_capture.getvalue()
+                logger.info(f"✅ Analysis completed successfully. Results shape: {results.shape}")
+                logger.debug(f"Results columns: {list(results.columns)}")
                 
-                # Log the captured outputs
-                if log_contents:
-                    logger.info("=== MODEL LOG OUTPUT ===")
-                    for line in log_contents.split('\n'):
-                        if line.strip():
-                            logger.info(f"MODEL LOG: {line}")
+                # Convert results to list of dicts for JSON response
+                response_data = results.to_dict(orient='records')
                 
-                if stdout_contents:
-                    logger.info("=== MODEL STDOUT ===")
-                    for line in stdout_contents.split('\n'):
-                        if line.strip():
-                            logger.info(f"MODEL STDOUT: {line}")
+                logger.info(f"📊 Returning {len(response_data)} records for request {request_id}")
                 
-                if stderr_contents:
-                    logger.info("=== MODEL STDERR ===")
-                    for line in stderr_contents.split('\n'):
-                        if line.strip():
-                            logger.error(f"MODEL STDERR: {line}")
+                return {
+                    "success": True,
+                    "request_id": request_id,
+                    "data": response_data,
+                    "metadata": {
+                        "records_count": len(response_data),
+                        "columns": list(results.columns)
+                    }
+                }
                 
             except Exception as model_error:
-                # Capture any logs that occurred before the exception
-                log_contents = log_capture.getvalue()
-                stdout_contents = stdout_capture.getvalue()
-                stderr_contents = stderr_capture.getvalue()
-                
-                logger.error("=== MODEL EXECUTION FAILED ===")
-                logger.error(f"Model error: {str(model_error)}")
-                logger.error(traceback.format_exc())
-                
-                if log_contents:
-                    logger.error("=== MODEL LOGS BEFORE FAILURE ===")
-                    for line in log_contents.split('\n'):
-                        if line.strip():
-                            logger.error(f"MODEL LOG: {line}")
-                
-                if stderr_contents:
-                    logger.error("=== MODEL STDERR BEFORE FAILURE ===")
-                    for line in stderr_contents.split('\n'):
-                        if line.strip():
-                            logger.error(f"MODEL STDERR: {line}")
-                
-                raise model_error
+                log_error_with_details("Analytics_Model2 execution failed", model_error, {
+                    "input_parameters": {
+                        "location": request.location,
+                        "product": request.product,
+                        "plant_mode": request.plant_mode,
+                        "fund_mode": request.fund_mode,
+                        "opex_mode": request.opex_mode,
+                        "carbon_value": request.carbon_value
+                    },
+                    "project_data_shape": project_data.shape,
+                    "multiplier_data_shape": MULTIPLIER_DATA.shape if MULTIPLIER_DATA is not None else None
+                })
+                raise HTTPException(status_code=500, detail=f"Model execution failed: {str(model_error)}")
 
-        logger.info("=== MODEL EXECUTION COMPLETED SUCCESSFULLY ===")
-        logger.info(f"Results shape: {results.shape}")
-        logger.info(f"Results columns: {list(results.columns)}")
-        if len(results) > 0:
-            logger.info("Sample result row:")
-            sample_row = results.iloc[0]
-            for col in results.columns:
-                logger.info(f"  {col}: {sample_row[col]}")
-        
-        # Convert results to list of dicts for JSON response
-        return results.to_dict(orient='records')
+        except HTTPException:
+            # Re-raise HTTP exceptions as they are
+            raise
+        except Exception as e:
+            log_error_with_details(f"Unexpected error in run_analysis for request {request_id}", e, {
+                "request_data": request.dict(),
+                "current_params": model.PARAMS
+            })
+            raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
-    except HTTPException:
-        logger.error("HTTPException raised during analysis")
-        raise
-    except Exception as e:
-        logger.critical(f"Analysis failed with unexpected error: {str(e)}")
-        logger.critical(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
-    finally:
-        logger.info("=== ANALYSIS REQUEST COMPLETED ===")
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "data_loaded": MULTIPLIER_DATA is not None and PROJECT_DATA is not None,
-        "multiplier_data_shape": MULTIPLIER_DATA.shape if MULTIPLIER_DATA is not None else None,
-        "project_data_shape": PROJECT_DATA.shape if PROJECT_DATA is not None else None
-    }
-
-@app.get("/available_data")
-async def get_available_data():
-    """Get available locations and products"""
-    if PROJECT_DATA is None:
-        raise HTTPException(status_code=500, detail="Project data not loaded")
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    """Global exception handler to catch any unhandled exceptions"""
+    request_id = getattr(request.state, 'request_id', 'unknown')
     
-    return {
-        "locations": PROJECT_DATA['Country'].unique().tolist(),
-        "products": PROJECT_DATA['Main_Prod'].unique().tolist()
-    }
+    log_error_with_details(f"Global exception handler caught error for request {request_id}", exc, {
+        "request_method": request.method,
+        "request_url": str(request.url),
+        "client_host": request.client.host if request.client else "unknown"
+    })
+    
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": "Internal server error",
+            "request_id": request_id,
+            "detail": "An unexpected error occurred"
+        }
+    )
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    logger.info("Starting Uvicorn server...")
+    try:
+        import uvicorn
+        uvicorn.run(
+            app, 
+            host="0.0.0.0", 
+            port=8000,
+            log_config=None,  # Use our custom logging
+            access_log=False  # We handle logging ourselves
+        )
+    except Exception as e:
+        log_error_with_details("Uvicorn server failed to start", e)
+        sys.exit(1)
