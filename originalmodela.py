@@ -8,8 +8,8 @@ PARAMS = {
     'ngCcontnt': 50.3,
     'hEFF': 0.80,
     'eEFF': 0.50,
-    'construction_prd': 3,
-    'operating_prd': 27,
+    'construction_prd': 4,
+    'operating_prd': 7,
     'util_fac_year1': 0.70,
     'util_fac_year2': 0.80,
     'util_fac_remaining': 0.95,
@@ -18,11 +18,11 @@ PARAMS = {
     'RR': 0.035,
     'IRR': 0.10,
     'shrDebt': 0.60,
-    'capex_spread': [0.2,0.5,0.3],
+    'capex_spread': [0.2,0.2,0.2,0.4],
     'OwnerCost': 0.10,
     'credit': 0.10,
-    'PRIcoef': 0.9,
-    'CONcoef': 0.1,
+    'PRIcoef': 0.3,
+    'CONcoef': 0.7,
     'tempNUM': 1000000
 }
 
@@ -152,17 +152,12 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
   Yrly_invsmt = [0] * project_life
 
   
-  ######UPDATED: Using second version's OPEX approach####################
+  ######NEW START####################
   capex[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * data["CAPEX"]
-  
-  # FIXED: Create an array of the same length for OPEX assignment
-  opex[PARAMS['construction_prd']:] = [data["OPEX"]] * len(opex[PARAMS['construction_prd']:])
-  
-  # Yrly_invsmt includes all cost components (like second version)
+  opex[PARAMS['construction_prd']:] = data["OPEX"] + feedcst[PARAMS['construction_prd']:] + fuelcst[PARAMS['construction_prd']:] + eleccst[PARAMS['construction_prd']:] + CO2cst[PARAMS['construction_prd']:]
+  ########NEW END####################
   Yrly_invsmt[:len(PARAMS['capex_spread'])] = np.array(PARAMS['capex_spread']) * data["CAPEX"]
   Yrly_invsmt[PARAMS['construction_prd']:] = data["OPEX"] + feedcst[PARAMS['construction_prd']:] + fuelcst[PARAMS['construction_prd']:] + eleccst[PARAMS['construction_prd']:] + CO2cst[PARAMS['construction_prd']:]
-  ########UPDATED END####################
-  
   logger.info(f"CAPEX distribution: {capex}")
   logger.info(f"OPEX distribution: {opex}")
   logger.info(f"Yearly investment: {Yrly_invsmt}")
@@ -286,11 +281,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       utilContr = sum(utilContrN) / sum(ContrDenom)
       bankContr = sum(bankContrN) / sum(ContrDenom)
       taxContr = sum(taxContrN) / sum(ContrDenom)
-      
-      # METHOD 1: Handle floating-point precision errors
-      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-      if abs(otherContr) < 1e-10:
-          otherContr = 0.0
+      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
   ######NEW END###################
 
 
@@ -372,11 +363,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       utilContr = sum(utilContrN) / sum(ContrDenom)
       bankContr = sum(bankContrN) / sum(ContrDenom)
       taxContr = sum(taxContrN) / sum(ContrDenom)
-      
-      # METHOD 1: Handle floating-point precision errors
-      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-      if abs(otherContr) < 1e-10:
-          otherContr = 0.0
+      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
   ######NEW END###################
 
 
@@ -485,11 +472,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       utilContr = sum(utilContrN) / sum(ContrDenom)
       bankContr = sum(bankContrN) / sum(ContrDenom)
       taxContr = sum(taxContrN) / sum(ContrDenom)
-      
-      # METHOD 1: Handle floating-point precision errors
-      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-      if abs(otherContr) < 1e-10:
-          otherContr = 0.0
+      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
   ######NEW END###################
 
 
@@ -565,13 +548,8 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       utilContr = sum(utilContrN) / sum(ContrDenom)
       bankContr = sum(bankContrN) / sum(ContrDenom)
       taxContr = sum(taxContrN) / sum(ContrDenom)
-      
-      # METHOD 1: Handle floating-point precision errors
-      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-      if abs(otherContr) < 1e-10:
-          otherContr = 0.0
+      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
   ######NEW END###################
-
 
   else:     #fund_mode is Mixed     ----------------------------------------------MIXED---------------------------------
     for i in range(project_life):
@@ -682,11 +660,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       utilContr = sum(utilContrN) / sum(ContrDenom)
       bankContr = sum(bankContrN) / sum(ContrDenom)
       taxContr = sum(taxContrN) / sum(ContrDenom)
-      
-      # METHOD 1: Handle floating-point precision errors
-      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-      if abs(otherContr) < 1e-10:
-          otherContr = 0.0     
+      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)      
 
     #----------------------------------------------------------------------------Brown field
     else:
@@ -754,11 +728,10 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
       utilContr = sum(utilContrN) / sum(ContrDenom)
       bankContr = sum(bankContrN) / sum(ContrDenom)
       taxContr = sum(taxContrN) / sum(ContrDenom)
-      
-      # METHOD 1: Handle floating-point precision errors
-      otherContr = round(Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr), 10)
-      if abs(otherContr) < 1e-10:
-          otherContr = 0.0
+      otherContr = Ps - (capexContr + opexContr + feedContr + utilContr + bankContr + taxContr)
+
+
+ 
 
 
   return Ps, Pso, Pc, Pco, capexContr, opexContr, feedContr, utilContr, bankContr, taxContr, otherContr, cshflw, cshflw2, Year, project_life, PARAMS['construction_prd'], Yrly_invsmt, bank_chrg, NetRevn, tax_pybl
@@ -936,11 +909,10 @@ def MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_
 
 ############################################################# ANALYTICS MODEL BEGINS ############################################################
 
-def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value):
-  # REMOVED: plant_size and plant_effy parameters
+def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value, plant_size, plant_effy):
+
   # Filtering data to choose country in which chemical plant is located and the type of product from the plant
-  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product)]
-  # REMOVED: & (project_data['Plant_Size'] == plant_size) & (project_data['Plant_Effy'] == plant_effy)
+  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product) & (project_data['Plant_Size'] == plant_size) & (project_data['Plant_Effy'] == plant_effy)]
   
   results=[]
   for index, data in dt.iterrows():
@@ -1029,7 +1001,8 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
     result = pd.DataFrame({
         'Year': Year,
         'Process Technology': [data['ProcTech']] * project_life,
-        # REMOVED: 'Plant Size' and 'Plant Efficiency' columns
+        'Plant Size': [data['Plant_Size']] * project_life,
+        'Plant Efficiency': [data['Plant_Effy']] * project_life,
         'Feedstock Input (TPA)': feedQ,
         'Product Output (TPA)': prodQ,
         'Direct GHG Emissions (TPA)': ghg_dir,
@@ -1069,5 +1042,7 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
 
 
   results = pd.concat(results, ignore_index=True)
+
+
 
   return results
