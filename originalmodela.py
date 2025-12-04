@@ -139,8 +139,7 @@ def MicroEconomic_Model(data, plant_mode, fund_mode, opex_mode, carbon_value):
   eleccst = PARAMS['elEFF'] * Relec * elecprice
 
 
-  CarbonTAX = [0] * project_life
-  CarbonTAX = [data["CO2price"]] * project_life
+  CarbonTAX = data["CO2price"] * project_life
 
 
   if carbon_value == "Yes":
@@ -937,10 +936,10 @@ def MacroEconomic_Model(multiplier, data, location, plant_mode, fund_mode, opex_
 
 ############################################################# ANALYTICS MODEL BEGINS ############################################################
 
-def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value, plant_size, plant_effy):
+def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fund_mode, opex_mode, carbon_value):
 
   # Filtering data to choose country in which chemical plant is located and the type of product from the plant
-  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product) & (project_data['Plant_Size'] == plant_size) & (project_data['Plant_Effy'] == plant_effy)]
+  dt = project_data[(project_data['Country'] == location) & (project_data['Main_Prod'] == product)]
   
   results=[]
   for index, data in dt.iterrows():
@@ -1028,9 +1027,6 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
 
     result = pd.DataFrame({
         'Year': Year,
-        'Process Technology': [data['ProcTech']] * project_life,
-        'Plant Size': [data['Plant_Size']] * project_life,
-        'Plant Efficiency': [data['Plant_Effy']] * project_life,
         'Feedstock Input (TPA)': feedQ,
         'Product Output (TPA)': prodQ,
         'Direct GHG Emissions (TPA)': ghg_dir,
@@ -1071,6 +1067,9 @@ def Analytics_Model2(multiplier, project_data, location, product, plant_mode, fu
 
   results = pd.concat(results, ignore_index=True)
 
+
+
+  return results
 
 
   return results
